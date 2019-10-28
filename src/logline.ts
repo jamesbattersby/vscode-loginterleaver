@@ -13,11 +13,13 @@ class LogLine {
 
     public getTimestamp() {
         // ^([\d-]*\s[\d:]*)\s.*$
-        let regex = /^[\d-]*\s[\d:]*/;
+        let regex = /^[\d-]+\s[\d:]*[,\d]*/;
         let stringTimestamp = regex.exec(this.line);
         if (stringTimestamp) {
             let timestamp = moment(stringTimestamp[0].toString());
-            return timestamp;
+            if (timestamp.isValid()) {
+                return timestamp;
+            }
         }
         return null;
     }
