@@ -7,7 +7,6 @@ import moment = require('moment');
 
 // Implementation
 class LogFile {
-    private readonly paddedFilename: string;
     private readonly filename: string;
     private readonly content: string[];
     private readonly size: number;
@@ -20,9 +19,9 @@ class LogFile {
     private dropBlank: boolean;
     private dropInvalid: boolean;
     private addFilename: string | undefined;
+    private paddedFilename: string;
 
-    public constructor(content: string, filename: string, filenamePadding: number, settings: vscode.WorkspaceConfiguration) {
-        this.paddedFilename = filename.padEnd(filenamePadding) + ' | ';
+    public constructor(content: string, filename: string, settings: vscode.WorkspaceConfiguration) {
         this.filename = filename;
         this.content = content.split(/\r?\n/);
         this.size = this.content.length;
@@ -37,6 +36,11 @@ class LogFile {
         this.dropBlank = (settings.get("dropBlankLines") === "true");
         this.dropInvalid = (settings.get("dropInvalidTimestamp") === "true");
         this.addFilename = settings.get("addFileName");
+        this.paddedFilename = filename;
+    }
+
+    public setMaxFilenameLength(filenamePadding: number) {
+        this.paddedFilename = this.filename.padEnd(filenamePadding) + ' | ';
     }
 
     public hasGotTimestamps() : boolean {

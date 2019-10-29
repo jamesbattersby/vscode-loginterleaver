@@ -9,47 +9,77 @@ import LogFile = require('./logfile');
 
 // Implementation
 class Interleaver {
-    private readonly file1: vscode.Uri;
-    private readonly file2: string;
+    private readonly fileList: vscode.Uri[];
     private readonly settings: vscode.WorkspaceConfiguration;
 
-    public constructor(settings:vscode.WorkspaceConfiguration, file1: vscode.Uri, file2: string) {
-        this.file1 = file1;
-        this.file2 = file2;
+    public constructor(settings:vscode.WorkspaceConfiguration, fileList: vscode.Uri[]) {
+        this.fileList = fileList;
         this.settings = settings;
     }
 
     public async interleave() {
-        vscode.workspace.openTextDocument(this.file1).then((document) => {
-            var filename1 = path.parse(this.file1.fsPath).base;
-            var filename2 = path.parse(this.file2).base;
-            var maxFilenameLen = filename1.length;
-            if (filename2.length > maxFilenameLen) {
-                maxFilenameLen = filename2.length;
-            }
-            let logFile1 = new LogFile(document.getText(), filename1, maxFilenameLen, this.settings);
-            let logFile2 = new LogFile(readFileSync(this.file2).toString(), filename2, maxFilenameLen, this.settings);
-            let merged: string[] = [];
+        var maxFilenameLen : number = 0;
+        let toInterleave : LogFile[] = [];
 
-            while (!logFile1.atEnd() && !logFile2.atEnd()) {
-                let file1Timestamp = logFile1.getTimestamp();
-                while (!logFile2.atEnd() && (file1Timestamp >= logFile2.getTimestamp() || logFile1.atEnd())) {
-                    let myLine = logFile2.getLine();
+        for (let i = 0; i < this.fileList.length; i++) {
+            let selectedLogFilename = path.parse(this.fileList[i].fsPath);
+            let selectedLogFile = new LogFile(readFileSync(this.fileList[i].fsPath).toString(),
+                                            selectedLogFilename.base, this.settings);
+            toInterleave.push(selectedLogFile);
+            if (selectedLogFilename.base.length > maxFilenameLen) {
+                maxFilenameLen = selectedLogFilename.base.length;
+            }
+        }
+
+        for (let i = 0; i < toInterleave.length; i++) {
+            toInterleave[i].setMaxFilenameLength(maxFilenameLen);
+        }
+
+        let merged: string[] = [];
+        let completed : number = 0;
+        while (toInterleave.length > completed) {
+            // Find the file with the earliest timestamp
+            let activeFile : number = -1;
+            for (let currentFile = 0; currentFile < toInterleave.length; currentFile++){
+                if (toInterleave[currentFile]) {
+                    if (activeFile !== -1) {
+                        if (toInterleave[currentFile].getTimestamp().isBefore(toInterleave[activeFile].getTimestamp())) {
+                            activeFile = currentFile;
+                        }
+                    } else {
+                        activeFile = currentFile;
+                    }
+                }
+            }
+
+            if (activeFile !== -1) {
+                // Keep adding lines from the current file until we pass the current time
+                let currentTimestamp = toInterleave[activeFile].getTimestamp();
+                while (currentTimestamp.isSame(toInterleave[activeFile].getTimestamp()) &&
+                    !toInterleave[activeFile].atEnd()) {
+                    let myLine = toInterleave[activeFile].getLine();
                     if (myLine) {
                         merged = merged.concat(myLine);
                     }
                 }
 
-                let file2Timestamp = logFile2.getTimestamp();
-                while (!logFile1.atEnd() && (file2Timestamp >= logFile1.getTimestamp() || logFile2.atEnd())) {
-                    let myLine = logFile1.getLine();
-                    if (myLine) {
-                        merged = merged.concat(myLine);
-                    }
+                // If we got to the end, then delete this file
+                if (toInterleave[activeFile].atEnd()) {
+                    delete toInterleave[activeFile];
+                    completed++;
                 }
+            } else {
+                // How odd, nothing found, delete everything
+                completed = toInterleave.length;
+                toInterleave = [];
             }
-            this.openInUntitled(merged.join('\n'), "log");
-        });
+        }
+        this.openInUntitled(merged.join('\n'), "log");
+    }
+
+    public add(newFile : vscode.Uri) {
+        this.fileList.push(newFile);
+        console.log('Adding new file');
     }
 
     public async openInUntitled(content: string, language?: string) {

@@ -8,18 +8,19 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register command
 	let disposable = vscode.commands.registerCommand('extension.loginterleaver', async () => {
-		// We need one open editor - this is the first log file
-		if (!vscode.window.activeTextEditor) {
-			vscode.window.showErrorMessage('Need open editor containing a log file.');
-			return; // no editor
-		}
 		let settings = vscode.workspace.getConfiguration('loginterleaver');
-		// todo: Allow multi-file open
-		let what = await vscode.window.showOpenDialog( { canSelectFiles: true, canSelectFolders: false, canSelectMany: false});
+		let what = await vscode.window.showOpenDialog( { canSelectFiles: true, canSelectFolders: false, canSelectMany: true});
 
+		let document : null | vscode.TextDocument = null;
 		if (what) {
-			let { document } = vscode.window.activeTextEditor;
-			const interleaver = new Interleaver(settings, document.uri, what[0].path);
+			const interleaver = new Interleaver(settings, what);
+
+			if (vscode.window.activeTextEditor) {
+				const editor = vscode.window.activeTextEditor;
+				if (editor.document.languageId === "log") {
+					interleaver.add(editor.document.uri);
+				}
+			}
 			interleaver.interleave();
 		}
 	});
