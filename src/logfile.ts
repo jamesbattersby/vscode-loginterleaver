@@ -1,6 +1,7 @@
 'use strict';
 
 // Imports
+import * as vscode from 'vscode';
 import LogLine = require('./logline');
 import moment = require('moment');
 
@@ -15,8 +16,12 @@ class LogFile {
     private finalTimestamp: moment.Moment;
     private gotTimestamps: boolean;
     private lastTimestamp: moment.Moment;
+    private regex: string | undefined;
+    private dropBlank: boolean;
+    private dropInvalid: boolean;
+    private addFilename: string | undefined;
 
-    public constructor(content: string, filename: string, filenamePadding: number) {
+    public constructor(content: string, filename: string, filenamePadding: number, settings: vscode.WorkspaceConfiguration) {
         this.paddedFilename = filename.padEnd(filenamePadding) + ' | ';
         this.filename = filename;
         this.content = content.split(/\r?\n/);
@@ -28,6 +33,10 @@ class LogFile {
         let lastTimestampOk : boolean = this.setLastTimestamp();
         this.gotTimestamps = lastTimestampOk && firstTimestampOk;
         this.lastTimestamp = this.initalTimestamp;
+        this.regex = settings.get("timestampRegex");
+        this.dropBlank = (settings.get("dropBlankLines") === "true");
+        this.dropInvalid = (settings.get("dropInvalidTimestamp") === "true");
+        this.addFilename = settings.get("addFileName");
     }
 
     public hasGotTimestamps() : boolean {
@@ -35,7 +44,7 @@ class LogFile {
     }
     public setFirstTimestamp() : boolean {
         for(let i = 0; i < this.size; i++) {
-            let logLine = new LogLine(this.content[i]);
+            let logLine = new LogLine(this.content[i], this.regex);
             let timestamp = logLine.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.initalTimestamp = timestamp;
@@ -47,7 +56,7 @@ class LogFile {
 
     public setLastTimestamp() : boolean {
         for(let i = this.size - 1; i >= 0; i--) {
-            let logLine = new LogLine(this.content[i]);
+            let logLine = new LogLine(this.content[i], this.regex);
             let timestamp = logLine.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.finalTimestamp = timestamp;
@@ -66,38 +75,63 @@ class LogFile {
     }
 
     public getTimestamp() : moment.Moment {
-        // Skip over any blank lines
-        while (this.currentLocation < this.size && 
-               this.content[this.currentLocation].trim().length === 0) {
-            this.currentLocation++;
-        }
-
         if (this.currentLocation >= this.size) {
             return this.lastTimestamp;
         }
-        let logline = new LogLine(this.content[this.currentLocation]);
-        let timestamp = logline.getTimestamp();
-        if (moment.isMoment(timestamp)) {
-            this.lastTimestamp = timestamp;
-            return timestamp;
-        }
+
+        do {
+            let logline = new LogLine(this.content[this.currentLocation], this.regex);
+            let timestamp = logline.getTimestamp();
+            if (moment.isMoment(timestamp)) {
+                this.lastTimestamp = timestamp;
+                return timestamp;
+            }
+            // If we are not dropping invalid timestamp entries,
+            // use the previous good one
+            if (!this.dropInvalid) {
+                return this.lastTimestamp;
+            }
+            // Got a bad timestamp to skip over, move to the next line
+            this.nextLine();
+            // Until we hit the end
+        } while (!this.atEnd());
         return this.lastTimestamp;
     }
 
     public getLine() : null | string {
+        let line : string = "";
+
         if (this.currentLocation >= this.size) {
             return null;
         }
-        // todo: what to do about adding original file to result?
-        //       Add file name at the beginning or end?
-        
-        // return this.paddedFilename + this.content[this.currentLocation++];
-        // return this.content[this.currentLocation++] + '    <-- ' + this.filename;
-        return this.content[this.currentLocation++];
+        else if (this.addFilename === "start") {
+            line = this.paddedFilename + this.content[this.currentLocation];
+        }
+        else if (this.addFilename === "end") {
+            line = this.content[this.currentLocation] + '    <-- ' + this.filename;
+        }
+        else {
+            line = this.content[this.currentLocation];
+        }
+        this.nextLine();
+        return line;
     }
 
     public atEnd() : Boolean {
         return (this.currentLocation >= this.size);
+    }
+
+    private nextLine() {
+        if (this.currentLocation < this.size) {
+            this.currentLocation++;
+        }
+        // Skip over any blank lines
+        if (this.dropBlank) {
+            while (this.currentLocation < this.size &&
+                this.content[this.currentLocation].trim().length === 0) {
+                this.currentLocation++;
+            }
+        }
     }
 }
 

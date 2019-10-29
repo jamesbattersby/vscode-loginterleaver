@@ -11,10 +11,12 @@ import LogFile = require('./logfile');
 class Interleaver {
     private readonly file1: vscode.Uri;
     private readonly file2: string;
+    private readonly settings: vscode.WorkspaceConfiguration;
 
-    public constructor(file1: vscode.Uri, file2: string) {
+    public constructor(settings:vscode.WorkspaceConfiguration, file1: vscode.Uri, file2: string) {
         this.file1 = file1;
         this.file2 = file2;
+        this.settings = settings;
     }
 
     public async interleave() {
@@ -25,13 +27,13 @@ class Interleaver {
             if (filename2.length > maxFilenameLen) {
                 maxFilenameLen = filename2.length;
             }
-            let logFile1 = new LogFile(document.getText(), filename1, maxFilenameLen);
-            let logFile2 = new LogFile(readFileSync(this.file2).toString(), filename2, maxFilenameLen);
+            let logFile1 = new LogFile(document.getText(), filename1, maxFilenameLen, this.settings);
+            let logFile2 = new LogFile(readFileSync(this.file2).toString(), filename2, maxFilenameLen, this.settings);
             let merged: string[] = [];
 
             while (!logFile1.atEnd() && !logFile2.atEnd()) {
                 let file1Timestamp = logFile1.getTimestamp();
-                while (!logFile2.atEnd() && (file1Timestamp >= logFile2.getTimestamp() || logFile2.atEnd())) {
+                while (!logFile2.atEnd() && (file1Timestamp >= logFile2.getTimestamp() || logFile1.atEnd())) {
                     let myLine = logFile2.getLine();
                     if (myLine) {
                         merged = merged.concat(myLine);

@@ -13,12 +13,13 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage('Need open editor containing a log file.');
 			return; // no editor
 		}
+		let settings = vscode.workspace.getConfiguration('loginterleaver');
 		// todo: Allow multi-file open
 		let what = await vscode.window.showOpenDialog( { canSelectFiles: true, canSelectFolders: false, canSelectMany: false});
 
 		if (what) {
 			let { document } = vscode.window.activeTextEditor;
-			const interleaver = new Interleaver(document.uri, what[0].path);
+			const interleaver = new Interleaver(settings, document.uri, what[0].path);
 			interleaver.interleave();
 		}
 	});

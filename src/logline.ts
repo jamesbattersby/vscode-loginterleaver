@@ -6,20 +6,22 @@ import * as moment from 'moment';
 // Implementation
 class LogLine {
     private readonly line: string;
+    private readonly regex: string | undefined;
 
-    public constructor(line: string){
+    public constructor(line: string, regex: string | undefined) {
         this.line = line;
+        this.regex = regex;
     }
 
-    public getTimestamp() {
-        // ^([\d-]*\s[\d:]*)\s.*$
+    public getTimestamp() : null | moment.Moment {
         let regex = /^[\d-]+\s[\d:]*[,\d]*/;
+        if (typeof this.regex === "string") {
+            regex = RegExp(this.regex);
+        }
         let stringTimestamp = regex.exec(this.line);
         if (stringTimestamp) {
             let timestamp = moment(stringTimestamp[0].toString());
-            if (timestamp.isValid()) {
-                return timestamp;
-            }
+            return timestamp;
         }
         return null;
     }

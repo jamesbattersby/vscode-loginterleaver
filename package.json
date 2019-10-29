@@ -17,7 +17,39 @@
 		"commands": [{
 			"command": "extension.loginterleaver",
 			"title": "Log Interleaver"
-		}]
+		}],
+		"configuration":[
+			{
+				"title": "Log Interleaver",
+				"properties": {
+					"loginterleaver.timestampRegex": {
+						"type": "string",
+						"default": "^[\\d-]+\\s[\\d:]*[,\\d]*",
+						"description": "Regular expression to extract timestamp from log line"
+					},
+					"loginterleaver.dropBlankLines": {
+						"type": "boolean",
+						"default": true,
+						"description": "Discard blank (whitespace only) lines"
+					},
+					"loginterleaver.dropInvalidTimestamp": {
+						"type": "boolean",
+						"default": false,
+						"description": "Discard lines with an invalid or timestamp"
+					},
+					"loginterleaver.addFileName": {
+						"type": "string",
+						"default": "off",
+						"enum": ["off", "start", "end"],
+						"enumDescriptions": [
+							"Do not add the filename to each line",
+							"Prefix each line with the original filename",
+							"Append the filename to each log line"
+						]
+					}
+				}
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
