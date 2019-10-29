@@ -11,7 +11,6 @@ export function activate(context: vscode.ExtensionContext) {
 		let settings = vscode.workspace.getConfiguration('loginterleaver');
 		let what = await vscode.window.showOpenDialog( { canSelectFiles: true, canSelectFolders: false, canSelectMany: true});
 
-		let document : null | vscode.TextDocument = null;
 		if (what) {
 			const interleaver = new Interleaver(settings, what);
 
