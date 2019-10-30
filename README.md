@@ -14,13 +14,13 @@ There are no special requirements.
 
 ## Extension Settings
 
-
-| timestampRegex       | The regular expression used to extract the timestamp from the logline.  Default `^[\\d-]+\\s[\\d:]*[,\\d]*`.                                                            |
-| dropBlankLines       | Drop lines that only contain whitespace.  Default `true`.                                                                                                               |
-| dropInvalidTimestamp | Drop lines where the timestamp cannot be extracted.  If set to `false` and the timestamp cannot be extracted, the  previous timestamp will be applied. Default `false`. |
-| addFileName          | Add the originating filename to the merged log.  Options are `off`, `start` and `end`. Default `off`                                                                    |
-| includeActiveEditor  | Include the contents of the active editor, if it is a log file.  Default `true`.                                                                                        |
-
+| Setting              | Description                                                                                                 |
+|----------------------|-------------------------------------------------------------------------------------------------------------|
+| dropBlankLines       | Drop lines that only contain whitespace. Default `true`.                                                    |
+| dropInvalidTimestamp | Drop lines where the timestamp cannot be extracted. Default `true`.                                         |
+| addFileName          | Add the originating filename to the merged log.  Options `off`, `start`, `end`.  Default `off`.             |
+| timestampRegex       | The regular expression used to extract the timestamp from the logline. Default `^[\\d-]+\\s[\\d:]*[,\\d]*`. |
+| includeActiveEditor  | Include the contents of the active editor, if it is a log file. Default `true`.                             |
 
 ## Usage
 
