@@ -24,7 +24,9 @@ class Interleaver {
         for (let i = 0; i < this.fileList.length; i++) {
             let selectedLogFilename = path.parse(this.fileList[i].fsPath);
             let selectedLogFile = new LogFile(readFileSync(this.fileList[i].fsPath).toString(),
-                                            selectedLogFilename.base, this.settings);
+                                              selectedLogFilename.base, this.settings);
+
+            console.log('Inserting file:' + this.fileList[i].path.toString());
             toInterleave.push(selectedLogFile);
             if (selectedLogFilename.base.length > maxFilenameLen) {
                 maxFilenameLen = selectedLogFilename.base.length;
@@ -70,6 +72,7 @@ class Interleaver {
                 }
             } else {
                 // How odd, nothing found, delete everything
+                console.log("Unable to find the next timestamp - aborting");
                 completed = toInterleave.length;
                 toInterleave = [];
             }
@@ -79,7 +82,7 @@ class Interleaver {
 
     public add(newFile : vscode.Uri) {
         this.fileList.push(newFile);
-        console.log('Adding new file');
+        console.log('Adding new file:' + newFile.path.toString());
     }
 
     public async openInUntitled(content: string, language?: string) {
@@ -89,7 +92,6 @@ class Interleaver {
         });
         vscode.window.showTextDocument(document);
     }
-
 }
 
 // Exports
