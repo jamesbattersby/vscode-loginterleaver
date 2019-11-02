@@ -3,3 +3,4 @@ out/
 npm-debug.log
 vsc-extension-quickstart.md
 .vscode-test/
+*.vsix

@@ -7,6 +7,7 @@
 	"engines": {
 		"vscode": "^1.39.0"
 	},
+	"publisher": "JamesBattersby",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/jamesbattersby/vscode-loginterleaver.git"
