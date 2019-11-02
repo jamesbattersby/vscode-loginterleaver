@@ -63,6 +63,9 @@
 		"pretest": "npm run compile",
 		"test": "node ./node_modules/vscode/bin/test"
 	},
+	"dependencies": {
+		"moment": "^2.24.0"
+	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
