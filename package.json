@@ -2,9 +2,14 @@
 	"name": "loginterleaver",
 	"displayName": "LogInterleaver",
 	"description": "Interleave logs",
+	"license": "MIT",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.39.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jamesbattersby/vscode-loginterleaver.git"
 	},
 	"categories": [
 		"Other"
@@ -61,7 +66,7 @@
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile",
-		"test": "node ./node_modules/vscode/bin/test"
+		"test": "node ./out/test/runTest.js"
 	},
 	"dependencies": {
 		"moment": "^2.24.0"
