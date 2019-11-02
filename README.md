@@ -1,3 +1,8 @@
+<p align=center>
+<a href="https://travis-ci.org/jamesbattersby/vscode-loginterleaver"><img src="https://travis-ci.org/jamesbattersby/vscode-loginterleaver.svg?branch=master" alt="Build Status"></a>
+</p>
+
+
 # Log Interleaver README
 
 `Log Interleaver` can interleave log files based on their timestamp.
