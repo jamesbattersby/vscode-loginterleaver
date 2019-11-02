@@ -1,8 +1,10 @@
 sudo: false
 
-os:
-  - osx
-  - linux
+jobs:
+  include:
+    - os: linux
+      dist: trusty
+    - os: osx
 
 before_install:
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
