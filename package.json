@@ -1,17 +1,24 @@
 {
 	"name": "loginterleaver",
 	"displayName": "LogInterleaver",
-	"description": "Interleave logs",
+	"description": "Interleave logs - merge logs from different sources in to one time sorted log",
 	"license": "MIT",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.39.0"
 	},
 	"publisher": "JamesBattersby",
+	"author": {
+		"name": "James Battersby"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/jamesbattersby/vscode-loginterleaver.git"
 	},
+	"bugs": {
+		"url": "https://github.com/jamesbattersby/vscode-loginterleaver/issues"
+	},
+	"homepage": "https://github.com/jamesbattersby/vscode-loginterleaver/blob/master/README.md",
 	"categories": [
 		"Other"
 	],
