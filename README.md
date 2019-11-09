@@ -25,7 +25,7 @@ There are no special requirements.
 | dropBlankLines       | Drop lines that only contain whitespace. Default `true`.                                                    |
 | dropInvalidTimestamp | Drop lines where the timestamp cannot be extracted. Default `true`.                                         |
 | addFileName          | Add the originating filename to the merged log.  Options `off`, `start`, `end`.  Default `off`.             |
-| timestampRegex       | The regular expression used to extract the timestamp from the logline. Default `^[\\d-]+\\s[\\d:]*[,\\d]*`. |
+| timestampRegex       | The regular expressions used to extract the timestamp from the logline Multiple expressions can be added as a space seperated list. Each must have one match group.  Default `(^[\\d-]+\\s[\\d:]*[,\\d]*)`. |
 | includeActiveEditor  | Include the contents of the active editor, if it is a log file. Default `true`.                             |
 
 ## Usage
