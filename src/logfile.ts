@@ -15,26 +15,26 @@ class LogFile {
     private finalTimestamp: moment.Moment;
     private gotTimestamps: boolean;
     private lastTimestamp: moment.Moment;
-    private regex: string | undefined;
     private dropBlank: boolean;
     private dropInvalid: boolean;
     private addFilename: string | undefined;
     private paddedFilename: string;
+    private regExpList: RegExp[];
 
     public constructor(content: string, filename: string, settings: vscode.WorkspaceConfiguration) {
+        this.regExpList = this.prepareRegularExpressions(settings.get("timestampRegex"));
         this.filename = filename;
         this.content = content.split(/\r?\n/);
         this.size = this.content.length;
         this.currentLocation = 0;
         this.initalTimestamp = moment();
         this.finalTimestamp = moment();
-        let firstTimestampOk : boolean = this.setFirstTimestamp();
-        let lastTimestampOk : boolean = this.setLastTimestamp();
+        let firstTimestampOk: boolean = this.setFirstTimestamp();
+        let lastTimestampOk: boolean = this.setLastTimestamp();
         this.gotTimestamps = lastTimestampOk && firstTimestampOk;
         this.lastTimestamp = this.initalTimestamp;
-        this.regex = settings.get("timestampRegex");
-        this.dropBlank = (settings.get("dropBlankLines") === "true");
-        this.dropInvalid = (settings.get("dropInvalidTimestamp") === "true");
+        this.dropBlank = (settings.get("dropBlankLines") === true);
+        this.dropInvalid = (settings.get("dropInvalidTimestamp") === true);
         this.addFilename = settings.get("addFileName");
         this.paddedFilename = filename;
     }
@@ -43,12 +43,12 @@ class LogFile {
         this.paddedFilename = this.filename.padEnd(filenamePadding) + ' | ';
     }
 
-    public hasGotTimestamps() : boolean {
+    public hasGotTimestamps(): boolean {
         return this.gotTimestamps;
     }
-    public setFirstTimestamp() : boolean {
-        for(let i = 0; i < this.size; i++) {
-            let logLine = new LogLine(this.content[i], this.regex);
+    public setFirstTimestamp(): boolean {
+        for (let i = 0; i < this.size; i++) {
+            let logLine = new LogLine(this.content[i], this.regExpList);
             let timestamp = logLine.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.initalTimestamp = timestamp;
@@ -58,9 +58,9 @@ class LogFile {
         return false;
     }
 
-    public setLastTimestamp() : boolean {
-        for(let i = this.size - 1; i >= 0; i--) {
-            let logLine = new LogLine(this.content[i], this.regex);
+    public setLastTimestamp(): boolean {
+        for (let i = this.size - 1; i >= 0; i--) {
+            let logLine = new LogLine(this.content[i], this.regExpList);
             let timestamp = logLine.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.finalTimestamp = timestamp;
@@ -70,21 +70,21 @@ class LogFile {
         return false;
     }
 
-    public getStartTimestamp() : moment.Moment {
+    public getStartTimestamp(): moment.Moment {
         return this.initalTimestamp;
     }
 
-    public getEndTimestamp() : moment.Moment {
+    public getEndTimestamp(): moment.Moment {
         return this.finalTimestamp;
     }
 
-    public getTimestamp() : moment.Moment {
+    public getTimestamp(): moment.Moment {
         if (this.currentLocation >= this.size) {
             return this.lastTimestamp;
         }
 
         do {
-            let logline = new LogLine(this.content[this.currentLocation], this.regex);
+            let logline = new LogLine(this.content[this.currentLocation], this.regExpList);
             let timestamp = logline.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.lastTimestamp = timestamp;
@@ -102,8 +102,8 @@ class LogFile {
         return this.lastTimestamp;
     }
 
-    public getLine() : null | string {
-        let line : string = "";
+    public getLine(): null | string {
+        let line: string = "";
 
         if (this.currentLocation >= this.size) {
             return null;
@@ -121,7 +121,7 @@ class LogFile {
         return line;
     }
 
-    public atEnd() : Boolean {
+    public atEnd(): Boolean {
         return (this.currentLocation >= this.size);
     }
 
@@ -136,6 +136,20 @@ class LogFile {
                 this.currentLocation++;
             }
         }
+    }
+
+    private prepareRegularExpressions(regex: undefined | string): RegExp[] {
+        let regexs: RegExp[] = [/^[\d-]+\s[\d:]*[,\d]*/];
+
+        if (typeof regex === "string") {
+            if (regex.includes(" ")) {
+                regexs = [];
+                regex.split(" ").forEach(function (singleRegex) { regexs.push(RegExp(singleRegex)); });
+            } else {
+                regexs = [RegExp(regex)];
+            }
+        }
+        return regexs;
     }
 }
 

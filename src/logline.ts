@@ -6,22 +6,27 @@ import * as moment from 'moment';
 // Implementation
 class LogLine {
     private readonly line: string;
-    private readonly regex: string | undefined;
+    private readonly regexs: RegExp[];
 
-    public constructor(line: string, regex: string | undefined) {
+    public constructor(line: string, regexs: RegExp[]) {
         this.line = line;
-        this.regex = regex;
+        this.regexs = regexs;
     }
 
-    public getTimestamp() : null | moment.Moment {
-        let regex = /^[\d-]+\s[\d:]*[,\d]*/;
-        if (typeof this.regex === "string") {
-            regex = RegExp(this.regex);
-        }
-        let stringTimestamp = regex.exec(this.line);
-        if (stringTimestamp) {
-            let timestamp = moment(stringTimestamp[0].toString());
-            return timestamp;
+    public getTimestamp(): null | moment.Moment {
+        for (let index: number = 0; index < this.regexs.length; index++) {
+            let stringTimestamp = this.regexs[index].exec(this.line);
+            if (stringTimestamp) {
+                let tsIndex: number = 1;
+                if (stringTimestamp.length > 2) {
+                    console.error("Got multiple match groups, expecting two");
+                    console.error(this.regexs[index].source);
+                } else if (stringTimestamp.length === 1) {
+                    tsIndex = 0;
+                }
+                let timestamp = moment(stringTimestamp[tsIndex].toString());
+                return timestamp;
+            }
         }
         return null;
     }

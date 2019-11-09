@@ -12,19 +12,19 @@ class Interleaver {
     private readonly fileList: vscode.Uri[];
     private readonly settings: vscode.WorkspaceConfiguration;
 
-    public constructor(settings:vscode.WorkspaceConfiguration, fileList: vscode.Uri[]) {
+    public constructor(settings: vscode.WorkspaceConfiguration, fileList: vscode.Uri[]) {
         this.fileList = fileList;
         this.settings = settings;
     }
 
     public async interleave() {
-        var maxFilenameLen : number = 0;
-        let toInterleave : LogFile[] = [];
+        var maxFilenameLen: number = 0;
+        let toInterleave: LogFile[] = [];
 
         for (let i = 0; i < this.fileList.length; i++) {
             let selectedLogFilename = path.parse(this.fileList[i].fsPath);
             let selectedLogFile = new LogFile(readFileSync(this.fileList[i].fsPath).toString(),
-                                              selectedLogFilename.base, this.settings);
+                selectedLogFilename.base, this.settings);
 
             console.log('Inserting file:' + this.fileList[i].path.toString());
             toInterleave.push(selectedLogFile);
@@ -38,11 +38,11 @@ class Interleaver {
         }
 
         let merged: string[] = [];
-        let completed : number = 0;
+        let completed: number = 0;
         while (toInterleave.length > completed) {
             // Find the file with the earliest timestamp
-            let activeFile : number = -1;
-            for (let currentFile = 0; currentFile < toInterleave.length; currentFile++){
+            let activeFile: number = -1;
+            for (let currentFile = 0; currentFile < toInterleave.length; currentFile++) {
                 if (toInterleave[currentFile]) {
                     if (activeFile !== -1) {
                         if (toInterleave[currentFile].getTimestamp().isBefore(toInterleave[activeFile].getTimestamp())) {
@@ -80,7 +80,7 @@ class Interleaver {
         this.openInUntitled(merged.join('\n'), "log");
     }
 
-    public add(newFile : vscode.Uri) {
+    public add(newFile: vscode.Uri) {
         this.fileList.push(newFile);
         console.log('Adding new file:' + newFile.path.toString());
     }
