@@ -38,7 +38,7 @@
 				"properties": {
 					"loginterleaver.timestampRegex": {
 						"type": "string",
-						"default": "(^[\\d-]+\\s[\\d:]*[,\\d]*) ^aaa([\\d-]+\\s[\\d:]*[,\\d]*)",
+						"default": "(^[\\d]{4}[-\/][\\d]{2}[-\/][\\d]{2}(\\s|T){1}[\\d]{2}:[\\d]{2}:[\\d]{2}(\\.\\d*)?((\\+|-)?[\\d]{2}:[\\d]{2})?)",
 						"description": "Regular expressions to extract timestamp from log line.\nSpace seperated."
 					},
 					"loginterleaver.dropBlankLines": {

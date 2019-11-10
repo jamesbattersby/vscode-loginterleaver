@@ -22,9 +22,9 @@ suite('Extension Test Suite', () => {
 			{ line: '2019-01-01 12:15:22 With valid time stamp', expression: defaultExpression, result: moment('2019-01-01 12:15:22') },
 			{ line: '2019-51-01 12:15:22 With invalid time stamp', expression: defaultExpression, result: moment('2019-51-01 12:15:22') },
 			{ line: '2019-08-21 23:43:18,123 With valid time stamp with sub-seconds', expression: defaultExpression, result: moment('2019-08-21 23:43:18,123') },
-			{ line: '2019-08-21 23:43:18,123 Custom regexp, no match', expression: 'abc', result: null },
-			{ line: '2019-08-21T23:43:18,123 Custom regexp', expression: '^[\\d-]+T[\\d:]*[,\\d]*', result: moment('2019-08-21T23:43:18,123') },
-			{ line: 'blah2019-11-21 13:03:52,764 match group', expression: '^blah([\\d-]+\\s[\\d:]*[,\\d]*)', result: moment('2019-11-21 13:03:52,764') }
+			{ line: '2019-08-21 23:43:18.123 Custom regexp, no match', expression: 'abc', result: null },
+			{ line: '2019-08-21T23:43:18.123 Custom regexp', expression: '^([\\d-]+T[\\d:]*[.\\d]*)', result: moment('2019-08-21T23:43:18.123') },
+			{ line: 'blah2019-11-21 13:03:52.764 match group', expression: '([\\d-]+\\s[\\d:]*[.\\d]*)', result: moment('2019-11-21 13:03:52.764') }
 		];
 
 		testData.forEach(function (test) {
