@@ -14,17 +14,53 @@ suite('Extension Test Suite', () => {
 			line: string;
 			expression: undefined | string;
 			result: null | moment.Moment;
+			newLine: string;
 		}
 
 		let defaultExpression: string = '^[\\d-]+\\s[\\d:]*[,\\d]*';
 		let testData: TestElement[] = [
-			{ line: 'This line has no time stamp', expression: defaultExpression, result: null },
-			{ line: '2019-01-01 12:15:22 With valid time stamp', expression: defaultExpression, result: moment('2019-01-01 12:15:22') },
-			{ line: '2019-51-01 12:15:22 With invalid time stamp', expression: defaultExpression, result: moment('2019-51-01 12:15:22') },
-			{ line: '2019-08-21 23:43:18,123 With valid time stamp with sub-seconds', expression: defaultExpression, result: moment('2019-08-21 23:43:18,123') },
-			{ line: '2019-08-21 23:43:18.123 Custom regexp, no match', expression: 'abc', result: null },
-			{ line: '2019-08-21T23:43:18.123 Custom regexp', expression: '^([\\d-]+T[\\d:]*[.\\d]*)', result: moment('2019-08-21T23:43:18.123') },
-			{ line: 'blah2019-11-21 13:03:52.764 match group', expression: '([\\d-]+\\s[\\d:]*[.\\d]*)', result: moment('2019-11-21 13:03:52.764') }
+			{
+				line: 'This line has no time stamp',
+				expression: defaultExpression,
+				result: null,
+				newLine: 'This line has no time stamp'
+			},
+			{
+				line: '2019-01-01 12:15:22 With valid time stamp',
+				expression: defaultExpression,
+				result: moment('2019-01-01 12:15:22'),
+				newLine: '2019-01-01T12:15:22.000Z With valid time stamp'
+			},
+			{
+				line: '2019-51-01 12:15:22 With invalid time stamp',
+				expression: defaultExpression,
+				result: moment('2019-51-01 12:15:22'),
+				newLine: '2019-51-01 12:15:22 With invalid time stamp'
+			},
+			{
+				line: '2019-08-21 23:43:18,123 With valid time stamp with sub-seconds',
+				expression: defaultExpression,
+				result: moment('2019-08-21 23:43:18,123'),
+				newLine: '2019-08-21T22:43:18.123Z With valid time stamp with sub-seconds'
+			},
+			{
+				line: '2019-08-21 23:43:18.123 Custom regexp, no match',
+				expression: 'abc',
+				result: null,
+				newLine: '2019-08-21 23:43:18.123 Custom regexp, no match'
+			},
+			{
+				line: '2019-08-21T23:43:18.123 Custom regexp',
+				expression: '^([\\d-]+T[\\d:]*[.\\d]*)',
+				result: moment('2019-08-21T23:43:18.123'),
+				newLine: '2019-08-21T22:43:18.123Z Custom regexp'
+			},
+			{
+				line: 'blah2019-11-21 13:03:52.764 match group',
+				expression: '([\\d-]+\\s[\\d:]*[.\\d]*)',
+				result: moment('2019-11-21 13:03:52.764'),
+				newLine: 'blah2019-11-21T13:03:52.764Z match group'
+			}
 		];
 
 		testData.forEach(function (test) {
@@ -33,7 +69,7 @@ suite('Extension Test Suite', () => {
 				return;
 			}
 
-			let uut: LogLine = new LogLine(test.line, [RegExp(test.expression)]);
+			let uut: LogLine = new LogLine(test.line, [RegExp(test.expression)], true);
 			let uutResult: null | moment.Moment = uut.getTimestamp();
 
 			if (moment.isMoment(test.result) && moment.isMoment(uutResult)) {
@@ -41,6 +77,7 @@ suite('Extension Test Suite', () => {
 				if (test.result.isValid()) {
 					assert.equal(true, test.result.isSame(uutResult), test.line);
 				}
+				assert.equal(test.newLine, uut.getLine(), test.line)
 			}
 			else {
 				assert.equal(test.result, uutResult, test.line);

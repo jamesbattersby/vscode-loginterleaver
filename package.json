@@ -65,6 +65,11 @@
 							"Prefix each line with the original filename.",
 							"Append the filename to each log line."
 						]
+					},
+					"loginterleaver.replaceTimestamps": {
+						"type": "boolean",
+						"default": false,
+						"description": "Replace the timestamps with ISO formatted timestamps."
 					}
 				}
 			}

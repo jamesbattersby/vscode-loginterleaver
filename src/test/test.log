@@ -1,16 +1,6 @@
-2019-10-26 15:09:01 This is the first log line
-
-2019-10-26 15:09:03 This is the second log line
-
-
-no time stamp on this line
-
-
-
-
-
-2019-10-26 15:10:43 This is the third log line
-2019-10-26 15:10:43.1233 This is the third log line
-2019-10-26 16:10:44+01:00 This is the third log line
-2019-10-26T16:12:21+01:00 This is the fourth log line
-2019-10-26 15:28:11 This is the fifth log line
+2019-11-10 17:14:25+01:00 ONE
+2019-11-10 17:14:35+01:00 TWO
+2019-11-10 17:14:45+01:00 THREE
+2019-11-10 17:14:55+01:00 FOUR
+2019-11-10 17:15:05+01:00 FIVE
+2019-11-10 17:15:15+01:00 SIX

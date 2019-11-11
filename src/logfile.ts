@@ -11,6 +11,7 @@ class LogFile {
     private readonly content: string[];
     private readonly size: number;
     private currentLocation: number;
+    private currentLine: null | LogLine;
     private initalTimestamp: moment.Moment;
     private finalTimestamp: moment.Moment;
     private gotTimestamps: boolean;
@@ -20,6 +21,7 @@ class LogFile {
     private addFilename: string | undefined;
     private paddedFilename: string;
     private regExpList: RegExp[];
+    private replaceTimestamps: boolean;
 
     public constructor(content: string, filename: string, settings: vscode.WorkspaceConfiguration) {
         this.regExpList = this.prepareRegularExpressions(settings.get("timestampRegex"));
@@ -35,8 +37,10 @@ class LogFile {
         this.lastTimestamp = this.initalTimestamp;
         this.dropBlank = (settings.get("dropBlankLines") === true);
         this.dropInvalid = (settings.get("dropInvalidTimestamp") === true);
+        this.replaceTimestamps = (settings.get("replaceTimestamps") === true);
         this.addFilename = settings.get("addFileName");
         this.paddedFilename = filename;
+        this.currentLine = new LogLine(this.content[0], this.regExpList, this.replaceTimestamps);
     }
 
     public setMaxFilenameLength(filenamePadding: number) {
@@ -48,7 +52,7 @@ class LogFile {
     }
     public setFirstTimestamp(): boolean {
         for (let i = 0; i < this.size; i++) {
-            let logLine = new LogLine(this.content[i], this.regExpList);
+            let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps);
             let timestamp = logLine.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.initalTimestamp = timestamp;
@@ -60,7 +64,7 @@ class LogFile {
 
     public setLastTimestamp(): boolean {
         for (let i = this.size - 1; i >= 0; i--) {
-            let logLine = new LogLine(this.content[i], this.regExpList);
+            let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps);
             let timestamp = logLine.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.finalTimestamp = timestamp;
@@ -79,13 +83,12 @@ class LogFile {
     }
 
     public getTimestamp(): moment.Moment {
-        if (this.currentLocation >= this.size) {
+        if (this.currentLocation >= this.size || this.currentLine === null) {
             return this.lastTimestamp;
         }
 
         do {
-            let logline = new LogLine(this.content[this.currentLocation], this.regExpList);
-            let timestamp = logline.getTimestamp();
+            let timestamp = this.currentLine.getTimestamp();
             if (moment.isMoment(timestamp)) {
                 this.lastTimestamp = timestamp;
                 return timestamp;
@@ -103,19 +106,23 @@ class LogFile {
     }
 
     public getLine(): null | string {
-        let line: string = "";
+        if (this.currentLine === null) {
+            return "";
+        }
 
+        let line: string = "";
+        let content = this.currentLine.getLine();
         if (this.currentLocation >= this.size) {
             return null;
         }
         else if (this.addFilename === "start") {
-            line = this.paddedFilename + this.content[this.currentLocation];
+            line = this.paddedFilename + content;
         }
         else if (this.addFilename === "end") {
-            line = this.content[this.currentLocation] + '    <-- ' + this.filename;
+            line = content + '    <-- ' + this.filename;
         }
         else {
-            line = this.content[this.currentLocation];
+            line = content;
         }
         this.nextLine();
         return line;
@@ -135,6 +142,11 @@ class LogFile {
                 this.content[this.currentLocation].trim().length === 0) {
                 this.currentLocation++;
             }
+        }
+        if (this.currentLocation < this.size) {
+            this.currentLine = new LogLine(this.content[this.currentLocation], this.regExpList, this.replaceTimestamps);
+        } else {
+            this.currentLine = null;
         }
     }
 
