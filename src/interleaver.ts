@@ -3,7 +3,6 @@
 // Imports
 import * as vscode from 'vscode';
 import { readFile, readFileSync } from 'fs';
-import moment = require('moment');
 import path = require('path');
 import LogFile = require('./logfile');
 
