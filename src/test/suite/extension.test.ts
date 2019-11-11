@@ -17,7 +17,7 @@ suite('Extension Test Suite', () => {
 			newLine: string;
 		}
 
-		let defaultExpression: string = '^[\\d-]+\\s[\\d:]*[,\\d]*';
+		let defaultExpression: string = '^[\\d-]+\\s[\\d:]*[,\\d]*Z?';
 		let testData: TestElement[] = [
 			{
 				line: 'This line has no time stamp',
@@ -26,39 +26,39 @@ suite('Extension Test Suite', () => {
 				newLine: 'This line has no time stamp'
 			},
 			{
-				line: '2019-01-01 12:15:22 With valid time stamp',
+				line: '2019-01-01 12:15:22Z With valid time stamp',
 				expression: defaultExpression,
-				result: moment('2019-01-01 12:15:22'),
+				result: moment('2019-01-01 12:15:22Z'),
 				newLine: '2019-01-01T12:15:22.000Z With valid time stamp'
 			},
 			{
 				line: '2019-51-01 12:15:22 With invalid time stamp',
 				expression: defaultExpression,
-				result: moment('2019-51-01 12:15:22'),
+				result: moment('2019-51-01 12:15:22Z'),
 				newLine: '2019-51-01 12:15:22 With invalid time stamp'
 			},
 			{
-				line: '2019-08-21 23:43:18,123 With valid time stamp with sub-seconds',
+				line: '2019-08-21 23:43:18,123Z With valid time stamp with sub-seconds',
 				expression: defaultExpression,
-				result: moment('2019-08-21 23:43:18,123'),
-				newLine: '2019-08-21T22:43:18.123Z With valid time stamp with sub-seconds'
+				result: moment('2019-08-21 23:43:18,123Z'),
+				newLine: '2019-08-21T23:43:18.123Z With valid time stamp with sub-seconds'
 			},
 			{
-				line: '2019-08-21 23:43:18.123 Custom regexp, no match',
+				line: '2019-08-21 23:43:18.123Z Custom regexp, no match',
 				expression: 'abc',
 				result: null,
 				newLine: '2019-08-21 23:43:18.123 Custom regexp, no match'
 			},
 			{
-				line: '2019-08-21T23:43:18.123 Custom regexp',
-				expression: '^([\\d-]+T[\\d:]*[.\\d]*)',
-				result: moment('2019-08-21T23:43:18.123'),
-				newLine: '2019-08-21T22:43:18.123Z Custom regexp'
+				line: '2019-08-21T23:43:18.123Z Custom regexp',
+				expression: '^([\\d-]+T[\\d:]*[.\\d]*Z?)',
+				result: moment('2019-08-21T23:43:18.123Z'),
+				newLine: '2019-08-21T23:43:18.123Z Custom regexp'
 			},
 			{
-				line: 'blah2019-11-21 13:03:52.764 match group',
-				expression: '([\\d-]+\\s[\\d:]*[.\\d]*)',
-				result: moment('2019-11-21 13:03:52.764'),
+				line: 'blah2019-11-21 13:03:52.764Z match group',
+				expression: '([\\d-]+\\s[\\d:]*[.\\d]*Z?)',
+				result: moment('2019-11-21 13:03:52.764Z'),
 				newLine: 'blah2019-11-21T13:03:52.764Z match group'
 			}
 		];
@@ -77,7 +77,7 @@ suite('Extension Test Suite', () => {
 				if (test.result.isValid()) {
 					assert.equal(true, test.result.isSame(uutResult), test.line);
 				}
-				assert.equal(test.newLine, uut.getLine(), test.line)
+				assert.equal(test.newLine, uut.getLine(), test.line);
 			}
 			else {
 				assert.equal(test.result, uutResult, test.line);
