@@ -8,6 +8,9 @@ jobs:
       dist: trusty
     - os: osx
 
+node_js:
+  - "node"
+  
 before_install:
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
       export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:99.0;
