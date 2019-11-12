@@ -43,8 +43,4 @@ currently active editor contains a log file, this will be included in the interl
 
 ## Known Issues
 
-No known issues.
-
-## Release Notes
-
-Under development.
+Pleaes see the project [issues page](https://github.com/jamesbattersby/vscode-loginterleaver/issues) for current issues.
