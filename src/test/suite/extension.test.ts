@@ -17,7 +17,7 @@ suite('Extension Test Suite', () => {
 			newLine: string;
 		}
 
-		let defaultExpression: string = '^[\\d-]+\\s[\\d:]*[,\\d]*Z?';
+		let defaultExpression: string = '^([\\d]{4}[-\\/][\\d]{2}[-\\/][\\d]{2}[\\sT]{1}[\\d]{2}:[\\d]{2}:[\\d]{2}(?:[\\.,]{1}\\d*)?(?:Z)?(?:(?<!Z)[\\+-]{1}[\\d]{2}:[\\d]{2})?)';
 		let testData: TestElement[] = [
 			{
 				line: 'This line has no time stamp',
@@ -32,10 +32,23 @@ suite('Extension Test Suite', () => {
 				newLine: '2019-01-01T12:15:22.000Z With valid time stamp'
 			},
 			{
-				line: '2019-51-01 12:15:22 With invalid time stamp',
+				line: '2019-08-11 15:22:32+02:00 With valid time stamp with offset',
+				expression: defaultExpression,
+				result: moment('2019-08-11 15:22:32+02:00'),
+				newLine: '2019-08-11T13:22:32.000Z With valid time stamp with offset'
+			},
+			{
+				// Regex will match okay up to the Z.  Might want to reject this.
+				line: '2019-08-11 15:22:32Z+02:00 With invalid time stamp with offset',
+				expression: defaultExpression,
+				result: moment('2019-08-11 15:22:32Z'),
+				newLine: '2019-08-11T15:22:32.000Z+02:00 With invalid time stamp with offset'
+			},
+			{
+				line: '2019-51-01 12:15:22Z With invalid time stamp',
 				expression: defaultExpression,
 				result: moment('2019-51-01 12:15:22Z'),
-				newLine: '2019-51-01 12:15:22 With invalid time stamp'
+				newLine: '2019-51-01 12:15:22Z With invalid time stamp'
 			},
 			{
 				line: '2019-08-21 23:43:18,123Z With valid time stamp with sub-seconds',
@@ -57,9 +70,15 @@ suite('Extension Test Suite', () => {
 			},
 			{
 				line: 'blah2019-11-21 13:03:52.764Z match group',
-				expression: '([\\d-]+\\s[\\d:]*[.\\d]*Z?)',
+				expression: '^(?:blah)([\\d-]+\\s[\\d:]*[.\\d]*Z?)',
 				result: moment('2019-11-21 13:03:52.764Z'),
 				newLine: 'blah2019-11-21T13:03:52.764Z match group'
+			},
+			{
+				line: 'blah2019-11-21 13:03:52Z match group 2019-11-21 13:03:52Z',
+				expression: '^(?:blah)([\\d-]+\\s[\\d:]*[.\\d]*Z?)',
+				result: moment('2019-11-21 13:03:52Z'),
+				newLine: 'blah2019-11-21T13:03:52.000Z match group 2019-11-21 13:03:52Z'
 			}
 		];
 
@@ -75,9 +94,9 @@ suite('Extension Test Suite', () => {
 			if (moment.isMoment(test.result) && moment.isMoment(uutResult)) {
 				assert.equal(test.result.isValid(), uutResult.isValid(), test.line + " Validity");
 				if (test.result.isValid()) {
-					assert.equal(true, test.result.isSame(uutResult), test.line);
+					assert.equal(true, test.result.isSame(uutResult), test.line + " Time");
 				}
-				assert.equal(test.newLine, uut.getLine(), test.line);
+				assert.equal(test.newLine, uut.getLine(), test.line + " Text");
 			}
 			else {
 				assert.equal(test.result, uutResult, test.line);

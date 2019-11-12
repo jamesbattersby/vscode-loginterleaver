@@ -32,9 +32,14 @@ There are no special requirements.
 | dropBlankLines       | Drop lines that only contain whitespace. Default `true`.                                                    |
 | dropInvalidTimestamp | Drop lines where the timestamp cannot be extracted. Default `true`.                                         |
 | addFileName          | Add the originating filename to the merged log.  Options `off`, `start`, `end`.  Default `off`.             |
-| timestampRegex       | The regular expressions used to extract the timestamp from the logline Multiple expressions can be added as a space seperated list. Each must have one match group.  Default `(^[\d]{4}[-\/][\d]{2}[-\/][\d]{2}(\s\|T){1}[\d]{2}:[\d]{2}:[\d]{2}(\.\d*)?((\+\|-)?[\d]{2}:[\d]{2})?)`. |
+| timestampRegex       | The regular expressions used to extract the timestamp from the logline Multiple expressions can be added as a space seperated list. Each must have one match group.  Default `^([\d]{4}[-/][\d]{2}[-/][\d]{2}[\sT]{1}[\d]{2}:[\d]{2}:[\d]{2}(?:[\.,]{1}\d*)?(?:Z)?(?:(?<!Z)[\+-]{1}[\d]{2}:[\d]{2})?)`. |
 | includeActiveEditor  | Include the contents of the active editor, if it is a log file. Default `true`.                             |
 | replaceTimestamps    | Replace timestamps with ISO formatted timestamps in merged output. Default `false`.                         |
+
+### Notes on regular expressions
+
+The `timestampRegex` is a space seperated list of expressions.  All expressions must have exactly one match group, this is expected to be the timestamp.
+If your timestamps have some prefix, use a non-capturing group `(?:abc)`.
 
 ## Usage
 

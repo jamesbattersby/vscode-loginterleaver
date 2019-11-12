@@ -16,11 +16,11 @@ class LogLine {
         this.timestamp = null;
         this.required = line;
         for (let index: number = 0; index < this.regexs.length; index++) {
-            let stringTimestamp = this.regexs[index].exec(this.line);
-            if (stringTimestamp) {
-                this.timestamp = moment(stringTimestamp[0].toString());
+            let regexResult: null | RegExpExecArray = this.regexs[index].exec(this.line);
+            if (regexResult && regexResult.length === 2) {
+                this.timestamp = moment(regexResult[1].toString());
                 if (this.timestamp.isValid() && replaceTimestamp) {
-                    this.required = this.line.replace(this.regexs[index], this.timestamp.toISOString());
+                    this.required = this.line.replace(regexResult[1].toString(), this.timestamp.toISOString());
                 }
                 break;
             }
