@@ -1,3 +1,5 @@
+language: node_js
+
 sudo: false
 
 jobs:
@@ -15,6 +17,7 @@ before_install:
 
 install:
   - npm install
+  - npm version
   - npm run vscode:prepublish
 
 script:
