@@ -18,6 +18,7 @@
 	"bugs": {
 		"url": "https://github.com/jamesbattersby/vscode-loginterleaver/issues"
 	},
+	"preview": true,
 	"icon": "icons/log-interleaver-icon-big.png",
 	"homepage": "https://github.com/jamesbattersby/vscode-loginterleaver/blob/master/README.md",
 	"categories": [
