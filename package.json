@@ -1,100 +1,112 @@
 {
-	"name": "loginterleaver",
-	"displayName": "LogInterleaver",
-	"description": "Interleave logs - merge logs from different sources in to one time sorted log",
-	"license": "MIT",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.39.0"
-	},
-	"publisher": "JamesBattersby",
-	"author": {
-		"name": "James Battersby"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/jamesbattersby/vscode-loginterleaver.git"
-	},
-	"bugs": {
-		"url": "https://github.com/jamesbattersby/vscode-loginterleaver/issues"
-	},
-	"preview": true,
-	"icon": "icons/log-interleaver-icon-big.png",
-	"homepage": "https://github.com/jamesbattersby/vscode-loginterleaver/blob/master/README.md",
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:extension.loginterleaver"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [{
-			"command": "extension.loginterleaver",
-			"title": "Log Interleaver"
-		}],
-		"configuration":[
-			{
-				"title": "Log Interleaver",
-				"properties": {
-					"loginterleaver.timestampRegex": {
-						"type": "string",
-						"default": "(^[\\d]{4}[-\/][\\d]{2}[-\/][\\d]{2}(\\s|T){1}[\\d]{2}:[\\d]{2}:[\\d]{2}(\\.\\d*)?((\\+|-)?[\\d]{2}:[\\d]{2})?)",
-						"description": "Regular expressions to extract timestamp from log line.\nSpace seperated."
-					},
-					"loginterleaver.dropBlankLines": {
-						"type": "boolean",
-						"default": true,
-						"description": "Discard blank (whitespace only) lines."
-					},
-					"loginterleaver.dropInvalidTimestamp": {
-						"type": "boolean",
-						"default": false,
-						"description": "Discard lines with an invalid or timestamp."
-					},
-					"loginterleaver.includeActiveEditor": {
-						"type": "boolean",
-						"default": true,
-						"description": "Include the contents of the current active editor."
-					},
-					"loginterleaver.addFileName": {
-						"type": "string",
-						"default": "off",
-						"enum": ["off", "start", "end"],
-						"enumDescriptions": [
-							"Do not add the filename to each line.",
-							"Prefix each line with the original filename.",
-							"Append the filename to each log line."
-						]
-					},
-					"loginterleaver.replaceTimestamps": {
-						"type": "boolean",
-						"default": false,
-						"description": "Replace the timestamps with ISO formatted timestamps."
-					}
-				}
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
-		"test": "node ./out/test/runTest.js"
-	},
-	"dependencies": {
-		"moment": "^2.24.0"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.39.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
-		"tslint": "^5.12.1",
-		"vscode-test": "^1.2.0"
-	}
+  "name": "loginterleaver",
+  "displayName": "LogInterleaver",
+  "description": "Interleave logs - merge logs from different sources in to one time sorted log",
+  "license": "MIT",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.39.0"
+  },
+  "publisher": "JamesBattersby",
+  "author": {
+    "name": "James Battersby"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesbattersby/vscode-loginterleaver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jamesbattersby/vscode-loginterleaver/issues"
+  },
+  "preview": true,
+  "icon": "icons/log-interleaver-icon-big.png",
+  "homepage": "https://github.com/jamesbattersby/vscode-loginterleaver/blob/master/README.md",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.loginterleaver"
+  ],
+  "main": "./dist/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.loginterleaver",
+        "title": "Log Interleaver"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Log Interleaver",
+        "properties": {
+          "loginterleaver.timestampRegex": {
+            "type": "string",
+            "default": "(^[\\d]{4}[-/][\\d]{2}[-/][\\d]{2}(\\s|T){1}[\\d]{2}:[\\d]{2}:[\\d]{2}(\\.\\d*)?((\\+|-)?[\\d]{2}:[\\d]{2})?)",
+            "description": "Regular expressions to extract timestamp from log line.\nSpace seperated."
+          },
+          "loginterleaver.dropBlankLines": {
+            "type": "boolean",
+            "default": true,
+            "description": "Discard blank (whitespace only) lines."
+          },
+          "loginterleaver.dropInvalidTimestamp": {
+            "type": "boolean",
+            "default": false,
+            "description": "Discard lines with an invalid or timestamp."
+          },
+          "loginterleaver.includeActiveEditor": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include the contents of the current active editor."
+          },
+          "loginterleaver.addFileName": {
+            "type": "string",
+            "default": "off",
+            "enum": [
+              "off",
+              "start",
+              "end"
+            ],
+            "enumDescriptions": [
+              "Do not add the filename to each line.",
+              "Prefix each line with the original filename.",
+              "Append the filename to each log line."
+            ]
+          },
+          "loginterleaver.replaceTimestamps": {
+            "type": "boolean",
+            "default": false,
+            "description": "Replace the timestamps with ISO formatted timestamps."
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "webpack --mode production",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "test-compile": "tsc -p ./"    
+  },
+  "dependencies": {
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.39.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "ts-loader": "^6.2.1",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1",
+    "vscode-test": "^1.2.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
 }
