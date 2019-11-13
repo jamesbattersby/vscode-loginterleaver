@@ -21,10 +21,6 @@ of invalid or missing timestamps, these lines will be kept together in the merge
 * Can include the contents of the current active editor, if it is a log file.
 * The merged output can contain the file names of the source files, either prefixed or appended to each line.
 
-## Requirements
-
-There are no special requirements.
-
 ## Extension Settings
 
 | Setting              | Description                                                                                                 |
