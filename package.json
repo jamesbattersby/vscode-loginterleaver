@@ -90,7 +90,7 @@
     "test": "node ./out/test/runTest.js",
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch",
-    "test-compile": "tsc -p ./"    
+    "test-compile": "tsc -p ./"
   },
   "dependencies": {
     "moment": "^2.24.0"
