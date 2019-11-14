@@ -37,6 +37,18 @@ of invalid or missing timestamps, these lines will be kept together in the merge
 The `timestampRegex` is a space seperated list of expressions.  All expressions must have exactly one match group, this is expected to be the timestamp.
 If your timestamps have some prefix, use a non-capturing group `(?:abc)`.
 
+The default regex should be able to extract an ISO formatted timestamp.  So, all of the following should work by default:
+
+- `2019-11-14 15:36:00`
+- `2019-11-14 15:36:00Z`
+- `2019-11-14 15:36:00+01:00`
+- `2019-11-14 15:36:00.123`
+- `2019-11-14 15:36:00.123-07:00`
+
+The timestamps may include a `T` between the date and time.
+
+Note that if no timezone information is supplied, the timezone will be assumed to be the same as the local machine.
+
 ## Usage
 
 Select `Log Interleaver` from the command pallet, then select the files to interleave.  A new editor will be opened with the interleaved logs.  If the

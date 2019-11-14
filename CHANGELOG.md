@@ -2,6 +2,12 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
+## [Unreleased]
+
+Features:
+- Updated extension name.
+- Added more description around the default regex.
+
 ## 0.0.1: 12 November 2019
 
 Features:
