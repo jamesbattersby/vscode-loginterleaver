@@ -10,18 +10,18 @@ class LogFile {
     private readonly filename: string;
     private readonly content: string[];
     private readonly size: number;
+    private readonly gotTimestamps: boolean;
+    private readonly replaceTimestamps: boolean;
+    private readonly regExpList: RegExp[];
+    private readonly dropBlank: boolean;
+    private readonly dropInvalid: boolean;
+    private readonly addFilename: string | undefined;
     private currentLocation: number;
     private currentLine: null | LogLine;
     private initalTimestamp: moment.Moment;
-    private finalTimestamp: moment.Moment;
-    private gotTimestamps: boolean;
     private lastTimestamp: moment.Moment;
-    private dropBlank: boolean;
-    private dropInvalid: boolean;
-    private addFilename: string | undefined;
     private paddedFilename: string;
-    private regExpList: RegExp[];
-    private replaceTimestamps: boolean;
+
 
     public constructor(content: string, filename: string, settings: vscode.WorkspaceConfiguration) {
         this.regExpList = this.prepareRegularExpressions(settings.get("timestampRegex"));
@@ -30,10 +30,7 @@ class LogFile {
         this.size = this.content.length;
         this.currentLocation = 0;
         this.initalTimestamp = moment();
-        this.finalTimestamp = moment();
-        let firstTimestampOk: boolean = this.setFirstTimestamp();
-        let lastTimestampOk: boolean = this.setLastTimestamp();
-        this.gotTimestamps = lastTimestampOk && firstTimestampOk;
+        this.gotTimestamps = this.setFirstTimestamp();
         this.lastTimestamp = this.initalTimestamp;
         this.dropBlank = (settings.get("dropBlankLines") === true);
         this.dropInvalid = (settings.get("dropInvalidTimestamp") === true);
@@ -62,24 +59,8 @@ class LogFile {
         return false;
     }
 
-    public setLastTimestamp(): boolean {
-        for (let i = this.size - 1; i >= 0; i--) {
-            let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps);
-            let timestamp = logLine.getTimestamp();
-            if (moment.isMoment(timestamp)) {
-                this.finalTimestamp = timestamp;
-                return true;
-            }
-        }
-        return false;
-    }
-
     public getStartTimestamp(): moment.Moment {
         return this.initalTimestamp;
-    }
-
-    public getEndTimestamp(): moment.Moment {
-        return this.finalTimestamp;
     }
 
     public getTimestamp(): moment.Moment {
