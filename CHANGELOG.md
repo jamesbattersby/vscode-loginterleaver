@@ -2,6 +2,9 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
+## Unreleased
+
+
 ## 0.0.2: 17 November 2019
 
 Updates:

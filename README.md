@@ -1,5 +1,5 @@
 <p align=center>
-<a href="https://travis-ci.org/jamesbattersby/vscode-loginterleaver"><img src="https://travis-ci.org/jamesbattersby/vscode-loginterleaver.svg?branch=v0.0.2" alt="Build Status"></a>
+<a href="https://travis-ci.org/jamesbattersby/vscode-loginterleaver"><img src="https://travis-ci.org/jamesbattersby/vscode-loginterleaver.svg?branch=master" alt="Build Status"></a>
 <a href="https://raw.githubusercontent.com/jamesbattersby/vscode-loginterleaver/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat"></a>
 </p>
 
