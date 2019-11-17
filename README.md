@@ -22,15 +22,14 @@ of invalid or missing timestamps, these lines will be kept together in the merge
 * The merged output can contain the file names of the source files, either prefixed or appended to each line.
 
 ## Extension Settings
-
-| Setting              | Description                                                                                                 |
-|----------------------|-------------------------------------------------------------------------------------------------------------|
-| dropBlankLines       | Drop lines that only contain whitespace. Default `true`.                                                    |
-| dropInvalidTimestamp | Drop lines where the timestamp cannot be extracted. Default `true`.                                         |
-| addFileName          | Add the originating filename to the merged log.  Options `off`, `start`, `end`.  Default `off`.             |
-| timestampRegex       | The regular expressions used to extract the timestamp from the logline Multiple expressions can be added as a space seperated list. Each must have one match group.  Default `^([\d]{4}[-/][\d]{2}[-/][\d]{2}[\sT]{1}[\d]{2}:[\d]{2}:[\d]{2}(?:[\.,]{1}\d*)?(?:Z)?(?:(?<!Z)[\+-]{1}[\d]{2}:[\d]{2})?)`. |
-| includeActiveEditor  | Include the contents of the active editor, if it is a log file. Default `true`.                             |
-| replaceTimestamps    | Replace timestamps with ISO formatted timestamps in merged output. Default `false`.                         |
+| Setting              | Description                                                                                                                          | Default                                                                                                                      |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| dropBlankLines       | Drop lines that only contain whitespace .                                                                                            | `true`                                                                                                                       |
+| dropInvalidTimestamp | Drop lines where the timestamp cannot be extracted.                                                                                  | `true`                                                                                                                       |
+| addFileName          | Add the original filename to the merged log.  Options `off`, `start`, `end`.                                                         | `off`                                                                                                                        |
+| timestampRegex       | The regular expression used to extract the timestamp from the log file. Multiple expressions can be added as a space separated list. | `^([\d]{4}[-/][\d]{2}[-/][\d]{2}[\sT]{1}[\d]{2}:[\d]{2}:[\d]{2}(?:[\.,]{1}\d*)?(?:Z)?(?:(?&lt;!Z)[\+-]{1}[\d]{2}:[\d]{2})?)` |
+| includeActiveEditor  | Include the contents of the active editor, if it is a log file.                                                                      | `true`                                                                                                                       |
+| replaceTimestamps    | Replace timestamps with ISO formatted timestamps in the merged output.                                                               | `false`                                                                                                                      |
 
 ### Notes on regular expressions
 
