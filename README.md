@@ -17,7 +17,7 @@ Combine multiple log files in to a single ordered log.
 * Lines with invalid or missing timestamps can be either removed, or have the timestamp of the immediatly preceeding line assigned.  If there is a block
 of invalid or missing timestamps, these lines will be kept together in the merged output
 * Timestamps in the merged output can be re-written in ISO format.
-* Can merge an arbitary number of of files at once.
+* Can merge an arbitary number of log files at once.
 * Can include the contents of the current active editor, if it is a log file.
 * The merged output can contain the file names of the source files, either prefixed or appended to each line.
 
