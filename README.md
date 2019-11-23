@@ -34,7 +34,7 @@ of invalid or missing timestamps, these lines will be kept together in the merge
 ### Notes on regular expressions
 
 The `timestampRegex` is a space seperated list of expressions.  All expressions must have exactly one match group, this is expected to be the timestamp.
-If your timestamps have some prefix, use a non-capturing group `(?:abc)`.
+If your timestamps have some prefix, use a non-capturing group. For example: `(?:abc)`.
 
 The default regex should be able to extract an ISO formatted timestamp.  So, all of the following should work by default:
 
