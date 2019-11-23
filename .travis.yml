@@ -7,6 +7,7 @@ jobs:
     - os: linux
       dist: trusty
     - os: osx
+    - os: windows
 
 node_js:
   - "node"
