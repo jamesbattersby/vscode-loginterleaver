@@ -10,6 +10,7 @@ Package Updates:
 - tslist 5.20.0 -> 5.20.1
 - vscode-test 1.2.2 -> 1.2.3
 - glob 7.1.5 -> 7.1.6
+- typescript 3.6.4 -> 3.7.2
 
 ## 0.0.2: 17 November 2019
 
