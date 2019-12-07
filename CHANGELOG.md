@@ -6,7 +6,7 @@ All notable changes to the "Log Interleaver" extension will be documented in thi
 
 Package Updates:
 - vscode 1.39.0 -> 1.40.0
-- node 10.17.3 -> 12.12.12
+- node 10.17.3 -> 12.12.14
 - tslist 5.20.0 -> 5.20.1
 - vscode-test 1.2.2 -> 1.2.3
 - glob 7.1.5 -> 7.1.6
