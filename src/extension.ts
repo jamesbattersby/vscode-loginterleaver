@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (what) {
 			const interleaver = new Interleaver(settings, what);
 
-			if (settings.get("includeActiveEditor") === "true") {
+			if (settings.get("includeActiveEditor") === true) {
 				if (vscode.window.activeTextEditor) {
 					const editor = vscode.window.activeTextEditor;
 					if (editor.document.languageId === "log") {
