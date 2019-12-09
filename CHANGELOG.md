@@ -2,6 +2,11 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
+## Unreleased
+
+Package Updates:
+- typescript 3.7.2 -> 3.7.3
+
 ## 0.0.3: 8 December 2019
 
 Bug Fixes:
