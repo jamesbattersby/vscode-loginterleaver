@@ -24,6 +24,13 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "logs",
+    "logging",
+    "timestamps",
+    "log merge",
+    "log interleave"
+  ],
   "activationEvents": [
     "onCommand:extension.loginterleaver"
   ],
