@@ -5,7 +5,7 @@
   "license": "MIT",
   "version": "0.0.0",
   "engines": {
-    "vscode": "^1.40.0"
+    "vscode": "^1.41.0"
   },
   "publisher": "JamesBattersby",
   "author": {
@@ -105,8 +105,8 @@
   "devDependencies": {
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^12.12.14",
-    "@types/vscode": "^1.40.0",
+    "@types/node": "^12.12.17",
+    "@types/vscode": "^1.41.0",
     "glob": "^7.1.6",
     "mocha": "^6.1.4",
     "ts-loader": "^6.2.1",

@@ -6,6 +6,8 @@ All notable changes to the "Log Interleaver" extension will be documented in thi
 
 Package Updates:
 - typescript 3.7.2 -> 3.7.3
+- node 12.12.14 -> 12.12.17
+- vscode 1.40.0 -> 1.41.0
 
 ## 0.0.3: 8 December 2019
 
