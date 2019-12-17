@@ -1,17 +1,17 @@
 'use strict';
 
 // Imports
-import * as vscode from 'vscode';
-import { readFile, readFileSync } from 'fs';
+import { Uri, WorkspaceConfiguration, window, workspace } from 'vscode';
+import { readFileSync } from 'fs';
 import path = require('path');
-import LogFile = require('./logfile');
+import { LogFile } from './logfile';
 
 // Implementation
-class Interleaver {
-    private readonly fileList: vscode.Uri[];
-    private readonly settings: vscode.WorkspaceConfiguration;
+export class Interleaver {
+    private readonly fileList: Uri[];
+    private readonly settings: WorkspaceConfiguration;
 
-    public constructor(settings: vscode.WorkspaceConfiguration, fileList: vscode.Uri[]) {
+    public constructor(settings: WorkspaceConfiguration, fileList: Uri[]) {
         this.fileList = fileList;
         this.settings = settings;
     }
@@ -79,19 +79,16 @@ class Interleaver {
         this.openInUntitled(merged.join('\n'), "log");
     }
 
-    public add(newFile: vscode.Uri) {
+    public add(newFile: Uri) {
         this.fileList.push(newFile);
         console.log('Adding new file:' + newFile.path.toString());
     }
 
     public async openInUntitled(content: string, language?: string) {
-        const document = await vscode.workspace.openTextDocument({
+        const document = await workspace.openTextDocument({
             language,
             content,
         });
-        vscode.window.showTextDocument(document);
+        window.showTextDocument(document);
     }
 }
-
-// Exports
-export = Interleaver;

@@ -1,12 +1,12 @@
 'use strict';
 
 // Imports
-import * as vscode from 'vscode';
-import LogLine = require('./logline');
+import { WorkspaceConfiguration } from 'vscode';
+import { LogLine } from './logline';
 import moment = require('moment');
 
 // Implementation
-class LogFile {
+export class LogFile {
     private readonly filename: string;
     private readonly content: string[];
     private readonly size: number;
@@ -23,7 +23,7 @@ class LogFile {
     private paddedFilename: string;
 
 
-    public constructor(content: string, filename: string, settings: vscode.WorkspaceConfiguration) {
+    public constructor(content: string, filename: string, settings: WorkspaceConfiguration) {
         this.regExpList = this.prepareRegularExpressions(settings.get("timestampRegex"));
         this.filename = filename;
         this.content = content.split(/\r?\n/);
@@ -145,6 +145,3 @@ class LogFile {
         return regexs;
     }
 }
-
-// Exports
-export = LogFile;

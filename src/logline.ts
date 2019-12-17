@@ -4,7 +4,7 @@
 import * as moment from 'moment';
 
 // Implementation
-class LogLine {
+export class LogLine {
     private readonly line: string;
     private readonly regexs: RegExp[];
     private timestamp: null | moment.Moment;
@@ -35,6 +35,3 @@ class LogLine {
         return this.required;
     }
 }
-
-// Exports
-export = LogLine;
