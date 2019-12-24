@@ -9,6 +9,7 @@ Package Updates:
 - node 12.12.14 -> 12.12.17
 - vscode 1.40.0 -> 1.41.0
 - vscode-test 1.2.3 -> 1.3.0
+- webpack 4.41.2 -> 4.41.4
 
 ## 0.0.3: 8 December 2019
 
