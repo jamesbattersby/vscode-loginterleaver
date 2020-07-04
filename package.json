@@ -100,7 +100,7 @@
     "test-compile": "tsc -p ./"
   },
   "dependencies": {
-    "moment": "^2.25.3"
+    "moment": "^2.27.0"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
