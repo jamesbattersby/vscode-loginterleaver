@@ -2,7 +2,7 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
-## Unreleased
+## 0.0.4: 26 July 2020
 
 Updates:
 - Package updated
