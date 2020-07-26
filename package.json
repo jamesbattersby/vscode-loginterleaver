@@ -3,9 +3,9 @@
   "displayName": "Log Interleaver",
   "description": "Interleave logs - merge logs from different sources in to one time sorted log",
   "license": "MIT",
-  "version": "0.0.0",
+  "version": "0.0.4",
   "engines": {
-    "vscode": "^1.42.0"
+    "vscode": "^1.47.0"
   },
   "publisher": "JamesBattersby",
   "author": {
