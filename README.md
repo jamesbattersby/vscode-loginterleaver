@@ -1,5 +1,5 @@
 <p align=center>
-<a href="https://travis-ci.org/jamesbattersby/vscode-loginterleaver"><img src="https://travis-ci.org/jamesbattersby/vscode-loginterleaver.svg?branch=master" alt="Build Status"></a>
+<a href="https://travis-ci.org/jamesbattersby/vscode-loginterleaver"><img src="https://travis-ci.org/jamesbattersby/vscode-loginterleaver.svg?branch=release_0.0.4" alt="Build Status"></a>
 <a href="https://raw.githubusercontent.com/jamesbattersby/vscode-loginterleaver/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat"></a>
 <a href="https://snyk.io/test/github/jamesbattersby/vscode-loginterleaver?targetFile=package.json"><img src="https://snyk.io/test/github/jamesbattersby/vscode-loginterleaver/badge.svg?targetFile=package.json" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/jamesbattersby/vscode-loginterleaver?targetFile=package.json" style="max-width:100%;"></a>
 </p>
