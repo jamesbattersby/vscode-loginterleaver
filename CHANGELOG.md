@@ -4,14 +4,9 @@ All notable changes to the "Log Interleaver" extension will be documented in thi
 
 ## Unreleased
 
-Package Updates:
-- typescript 3.7.2 -> 3.8.2
-- node 12.12.14 -> 13.7.0
-- vscode 1.40.0 -> 1.43.0
-- vscode-test 1.2.3 -> 1.3.0
-- webpack 4.41.2 -> 4.41.5
-- mocha 6.2.2 -> 7.0.2
-- tslint 5.20.1 -> 6.1.0
+Updates:
+- Package updated
+- Removed depreciated calls
 
 ## 0.0.3: 8 December 2019
 
