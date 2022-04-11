@@ -1,4 +1,5 @@
 <p align=center>
+[![CircleCI](https://circleci.com/gh/jamesbattersby/vscode-loginterleaver.svg?style=shield)](https://circleci.com/gh/jamesbattersby/vscode-loginterleaver)
 <a href="https://raw.githubusercontent.com/jamesbattersby/vscode-loginterleaver/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat"></a>
 <a href="https://snyk.io/test/github/jamesbattersby/vscode-loginterleaver?targetFile=package.json"><img src="https://snyk.io/test/github/jamesbattersby/vscode-loginterleaver/badge.svg?targetFile=package.json" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/jamesbattersby/vscode-loginterleaver?targetFile=package.json" style="max-width:100%;"></a>
 </p>
