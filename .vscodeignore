@@ -6,6 +6,6 @@ src/
 vsc-extension-quickstart.md
 tsconfig.json
 tslint.json
-.travis.yml
+.circleci
 webpack.config.js
 node_modules
