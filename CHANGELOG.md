@@ -2,7 +2,7 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
-## 0.0.5: 27 March 2022
+## 0.0.5: 12 April 2022
 
 Updates:
 - Package security updates
