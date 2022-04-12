@@ -5,7 +5,7 @@
   "license": "MIT",
   "version": "0.0.5",
   "engines": {
-    "vscode": "^1.65.0"
+    "vscode": "^1.66.0"
   },
   "publisher": "JamesBattersby",
   "author": {
