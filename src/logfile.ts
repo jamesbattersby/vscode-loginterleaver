@@ -113,6 +113,10 @@ export class LogFile {
         return (this.currentLocation >= this.size);
     }
 
+    public getSize(): number {
+        return this.size;
+    }
+
     private nextLine() {
         if (this.currentLocation < this.size) {
             this.currentLocation++;
