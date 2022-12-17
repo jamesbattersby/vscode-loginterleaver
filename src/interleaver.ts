@@ -1,7 +1,7 @@
 'use strict';
 
 // Imports
-import { Uri, WorkspaceConfiguration, window, workspace } from 'vscode';
+import { Uri, WorkspaceConfiguration, window, workspace, CancellationToken, Progress } from 'vscode';
 import { readFileSync } from 'fs';
 import path = require('path');
 import { LogFile } from './logfile';
@@ -13,6 +13,7 @@ export class Interleaver {
     private readonly settings: WorkspaceConfiguration;
     private readonly percentIncrement: number = 5;
     private readonly lineUpdate: number = 500;
+    private cancellationToken: CancellationToken | null = null;
     private toInterleave: LogFile[] = [];
     private completed: number = 0;
     private merged: string[] = []
@@ -28,7 +29,8 @@ export class Interleaver {
         this.lastPercentage = 0;
     }
 
-    public async setup(progress: any) {
+    public async doInterleaving(progress: any, cancelToken : CancellationToken) {
+        this.cancellationToken = cancelToken
         var maxFilenameLen: number = 0;
         progress.report({ message: "Loading files..." })
         for (let i = 0; i < this.fileList.length; i++) {
@@ -56,7 +58,10 @@ export class Interleaver {
     async interleave(progress: any) {
         let progressUpdateInterval: number = this.lineUpdate;
         while (this.toInterleave.length > this.completed) {
-            await this.processLine(progress)
+            if (this.cancellationToken?.isCancellationRequested) {
+                return
+            }
+            await this.processLine()
             progressUpdateInterval--
             if (progressUpdateInterval == 0) {
                 let percent: number = (this.progress / this.totalSize) * 100;
@@ -75,7 +80,7 @@ export class Interleaver {
         await this.openInUntitled(this.merged.join('\n'), "log")
     }
 
-    private async processLine(progress: any) {
+    private async processLine() {
         // Find the file with the earliest timestamp
         let activeFile: number = -1;
         for (let currentFile = 0; currentFile < this.toInterleave.length; currentFile++) {

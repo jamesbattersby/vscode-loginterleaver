@@ -28,7 +28,7 @@ export function activate(context: ExtensionContext) {
 				title: "Interleaving",
 				cancellable: true
 			},
-			 	async (progress, token) => { await interleaver.setup(progress); resolve()}
+			 	async (progress, token) => { await interleaver.doInterleaving(progress, token); resolve()}
 			)
 		}
 	});
