@@ -1,8 +1,7 @@
 'use strict';
 
 // Imports
-import { Uri, WorkspaceConfiguration, window, workspace, CancellationToken, Progress } from 'vscode';
-import { readFileSync } from 'fs';
+import { Uri, WorkspaceConfiguration, window, workspace, CancellationToken } from 'vscode';
 import path = require('path');
 import { LogFile } from './logfile';
 import { readFile } from 'fs/promises';
