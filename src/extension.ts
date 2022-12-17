@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
 			}
 			window.withProgress({
 				location: ProgressLocation.Notification,
-				title: "Interleaving",
+				title: "Log Interleaver",
 				cancellable: true
 			},
 			 	async (progress, token) => { await interleaver.doInterleaving(progress, token); resolve()}
