@@ -3,7 +3,7 @@
   "displayName": "Log Interleaver",
   "description": "Interleave logs - merge logs from different sources in to one time sorted log",
   "license": "MIT",
-  "version": "0.0.6-alpha1",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.74.0"
   },
