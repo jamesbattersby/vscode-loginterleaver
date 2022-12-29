@@ -18,7 +18,9 @@ export class Interleaver {
     private merged: string[] = []
     private totalSize: number = 0;
     private progress: number = 0;
+    private progressIndicator: any | null = null;
     private lastPercentage: number = 0;
+    private progressUpdateInterval: number = 0
 
     public constructor(settings: WorkspaceConfiguration, fileList: Uri[]) {
         this.fileList = fileList;
@@ -26,14 +28,20 @@ export class Interleaver {
         this.totalSize = 0;
         this.progress = 0;
         this.lastPercentage = 0;
+        this.progressUpdateInterval = this.lineUpdate
     }
 
-    public async doInterleaving(progress: any, cancelToken : CancellationToken) {
+    public async doInterleaving(progressIndicator: any, cancelToken: CancellationToken) {
         this.cancellationToken = cancelToken
         var maxFilenameLen: number = 0;
-        progress.report({ message: "Loading files..." })
+        this.progressIndicator = progressIndicator
+        await this.updateProgress('Loading files...')
         for (let i = 0; i < this.fileList.length; i++) {
+            if (this.cancellationToken?.isCancellationRequested) {
+                return
+            }
             let selectedLogFilename = path.parse(this.fileList[i].fsPath);
+            await this.updateProgress(`Loading files... : ${selectedLogFilename.base}`)
             let in_file = await readFile(this.fileList[i].fsPath)
             let selectedLogFile = new LogFile(in_file.toString(),
                 selectedLogFilename.base, this.settings);
@@ -49,33 +57,17 @@ export class Interleaver {
         for (let i = 0; i < this.toInterleave.length; i++) {
             this.toInterleave[i].setMaxFilenameLength(maxFilenameLen);
         }
-
-        progress.report({ increment: 0, message: "Progress: " })
-        return await this.interleave(progress)
+        return await this.interleave()
     }
 
-    async interleave(progress: any) {
-        let progressUpdateInterval: number = this.lineUpdate;
+    async interleave() {
         while (this.toInterleave.length > this.completed) {
             if (this.cancellationToken?.isCancellationRequested) {
                 return
             }
             await this.processLine()
-            progressUpdateInterval--
-            if (progressUpdateInterval == 0) {
-                let percent: number = (this.progress / this.totalSize) * 100;
-                let increment: number = 0;
-                if (percent > this.percentIncrement + this.lastPercentage) {
-                    this.lastPercentage = percent;
-                    increment = this.percentIncrement;
-                }
-                progress.report({ increment: increment, message: "Interleaving files... (" + percent.toFixed(2) + "%)" });
-                await new Promise<void>(r => setTimeout(r, 0));
-                progressUpdateInterval = this.lineUpdate;
-            }
         }
-        progress.report({ increment: this.percentIncrement, message: "Interleaving files... (100%)" });
-        await new Promise<void>(r => setTimeout(r, 0))
+        await this.updateProgress("Interleaving files... (100%)", this.percentIncrement)
         await this.openInUntitled(this.merged.join('\n'), "log")
     }
 
@@ -83,6 +75,9 @@ export class Interleaver {
         // Find the file with the earliest timestamp
         let activeFile: number = -1;
         for (let currentFile = 0; currentFile < this.toInterleave.length; currentFile++) {
+            if (this.cancellationToken?.isCancellationRequested) {
+                return
+            }
             if (this.toInterleave[currentFile]) {
                 if (activeFile !== -1) {
                     if (this.toInterleave[currentFile].getTimestamp().isBefore(this.toInterleave[activeFile].getTimestamp())) {
@@ -99,10 +94,13 @@ export class Interleaver {
             let currentTimestamp = this.toInterleave[activeFile].getTimestamp();
             while (currentTimestamp.isSame(this.toInterleave[activeFile].getTimestamp()) &&
                 !this.toInterleave[activeFile].atEnd()) {
+                if (this.cancellationToken?.isCancellationRequested) {
+                    return
+                }
                 let myLine = this.toInterleave[activeFile].getLine();
-                this.progress += 1
+                await this.doneLine();
                 if (myLine) {
-                    this.merged = this.merged.concat(myLine);
+                    this.merged.push(myLine);
                 }
             }
 
@@ -117,8 +115,31 @@ export class Interleaver {
             this.completed = this.toInterleave.length;
             this.toInterleave = [];
         }
-
     }
+
+    private async doneLine() {
+        this.progress += 1;
+        this.progressUpdateInterval--;
+        if (this.progressUpdateInterval == 0) {
+            let percent: number = (this.progress / this.totalSize) * 100;
+            let increment: number = 0;
+            if (percent > this.percentIncrement + this.lastPercentage) {
+                this.lastPercentage = percent;
+                increment = this.percentIncrement;
+            }
+            await this.updateProgress("Interleaving files... (" + percent.toFixed(2) + "%)", increment);
+            this.progressUpdateInterval = this.lineUpdate;
+        }
+    }
+
+
+    private async updateProgress(message: string, increment: number | null = null) {
+        if (this.progressIndicator) {
+            this.progressIndicator.report({ increment: increment, message: message });
+            await new Promise<void>(r => setTimeout(r, 0));
+        }
+    }
+
     public add(newFile: Uri) {
         this.fileList.push(newFile);
         console.log('Adding new file:' + newFile.path.toString());
