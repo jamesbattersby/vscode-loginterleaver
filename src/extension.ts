@@ -1,5 +1,6 @@
 // Imports
-import { commands, workspace, window, ExtensionContext } from 'vscode';
+import { resolve } from 'path';
+import { commands, workspace, window, ExtensionContext, ProgressLocation } from 'vscode';
 import { Interleaver } from './interleaver';
 
 // Activation
@@ -22,7 +23,13 @@ export function activate(context: ExtensionContext) {
 					}
 				}
 			}
-			interleaver.interleave();
+			window.withProgress({
+				location: ProgressLocation.Notification,
+				title: "Log Interleaver",
+				cancellable: true
+			},
+			 	async (progress, token) => { await interleaver.doInterleaving(progress, token); resolve()}
+			)
 		}
 	});
 	context.subscriptions.push(disposable);

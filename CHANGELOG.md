@@ -2,25 +2,38 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
-## 0.0.6: [unreleased]
+## 0.1.0: 29 December 2022
+
+Features:
+
+- Add progress indication (#425)
+
+Updates:
+
+- Package updates
+- Improved performance
 
 ## 0.0.5: 12 April 2022
 
 Updates:
+
 - Package security updates
 
 ## 0.0.4: 26 July 2020
 
 Updates:
+
 - Package updated
 - Removed depreciated calls
 
 ## 0.0.3: 8 December 2019
 
 Bug Fixes:
+
 - Corrected the `includeActiveEditor` setting.
 
 Package Updates:
+
 - vscode 1.39.0 -> 1.40.0
 - node 10.17.3 -> 12.12.14
 - tslist 5.20.0 -> 5.20.1
@@ -31,6 +44,7 @@ Package Updates:
 ## 0.0.2: 17 November 2019
 
 Updates:
+
 - Updated extension name.
 - Added more description around the default regex.
 - Removed unused code.
@@ -38,6 +52,7 @@ Updates:
 ## 0.0.1: 12 November 2019
 
 Features:
+
 - Can use multiple regular expressions to extract the timestamps from log files, allowing files with different format times to be merged.
 - Blank lines can be removed, enabling log files to be cleaned up.
 - Lines with invalid or missing timestamps can be either removed, or have the timestamp of the immediatly preceeding line assigned. If there is a block of invalid or missing timestamps, these lines will be kept together in the merged output

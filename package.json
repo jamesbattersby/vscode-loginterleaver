@@ -3,9 +3,9 @@
   "displayName": "Log Interleaver",
   "description": "Interleave logs - merge logs from different sources in to one time sorted log",
   "license": "MIT",
-  "version": "0.0.6-alpha1",
+  "version": "0.1.0",
   "engines": {
-    "vscode": "^1.66.0"
+    "vscode": "^1.74.0"
   },
   "publisher": "JamesBattersby",
   "author": {
@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/jamesbattersby/vscode-loginterleaver/issues"
   },
-  "preview": true,
+  "preview": false,
   "icon": "icons/log-interleaver-icon-big.png",
   "homepage": "https://github.com/jamesbattersby/vscode-loginterleaver/blob/master/README.md",
   "categories": [
@@ -49,7 +49,7 @@
           "loginterleaver.timestampRegex": {
             "type": "string",
             "default": "^([\\d]{4}[-\\/][\\d]{2}[-\\/][\\d]{2}[\\sT]{1}[\\d]{2}:[\\d]{2}:[\\d]{2}(?:[\\.,]{1}\\d*)?(?:Z)?(?:(?<!Z)[\\+-]{1}[\\d]{2}:[\\d]{2})?)",
-            "description": "Regular expressions to extract timestamp from log line.\nSpace seperated."
+            "description": "Regular expressions to extract timestamp from log line.\nSpace separated."
           },
           "loginterleaver.dropBlankLines": {
             "type": "boolean",
