@@ -8,6 +8,11 @@ Features:
 
 - Add progress indication (#425)
 
+Updates:
+
+- Package updates
+- Improved performance
+
 ## 0.0.5: 12 April 2022
 
 Updates:
