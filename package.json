@@ -51,6 +51,23 @@
             "default": "^([\\d]{4}[-\\/][\\d]{2}[-\\/][\\d]{2}[\\sT]{1}[\\d]{2}:[\\d]{2}:[\\d]{2}(?:[\\.,]{1}\\d*)?(?:Z)?(?:(?<!Z)[\\+-]{1}[\\d]{2}:[\\d]{2})?)",
             "description": "Regular expressions to extract timestamp from log line.\nSpace separated."
           },
+          "loginterleaver.timeFormatSpecifications": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "timeFormatSpecifications",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A name for the time format."
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Time format specifier for non-ISO formtted time. See https://date-fns.org/v2.30.0/docs/parse"
+                }
+              }
+            }
+          },          
           "loginterleaver.dropBlankLines": {
             "type": "boolean",
             "default": true,

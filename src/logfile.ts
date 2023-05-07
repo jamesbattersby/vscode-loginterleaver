@@ -13,6 +13,7 @@ export class LogFile {
     private readonly gotTimestamps: boolean;
     private readonly replaceTimestamps: boolean;
     private readonly regExpList: RegExp[];
+    private readonly timeFormats: IFormats[] | undefined;
     private readonly dropBlank: boolean;
     private readonly dropInvalid: boolean;
     private readonly addFilename: string | undefined;
@@ -25,6 +26,7 @@ export class LogFile {
 
     public constructor(content: string, filename: string, settings: WorkspaceConfiguration) {
         this.regExpList = this.prepareRegularExpressions(settings.get("timestampRegex"));
+        this.timeFormats = settings.get("timeFormatSpecifications");
         this.filename = filename;
         this.content = content.split(/\r?\n/);
         this.size = this.content.length;
@@ -37,7 +39,7 @@ export class LogFile {
         this.replaceTimestamps = (settings.get("replaceTimestamps") === true);
         this.addFilename = settings.get("addFileName");
         this.paddedFilename = filename;
-        this.currentLine = new LogLine(this.content[0], this.regExpList, this.replaceTimestamps);
+        this.currentLine = new LogLine(this.content[0], this.regExpList, this.replaceTimestamps, this.timeFormats);
     }
 
     public setMaxFilenameLength(filenamePadding: number) {
@@ -49,7 +51,7 @@ export class LogFile {
     }
     public setFirstTimestamp(): boolean {
         for (let i = 0; i < this.size; i++) {
-            let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps);
+            let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps, this.timeFormats);
             let timestamp = logLine.getTimestamp();
             if (isValid(timestamp)) {
                 this.initalTimestamp = timestamp;
@@ -129,7 +131,7 @@ export class LogFile {
             }
         }
         if (this.currentLocation < this.size) {
-            this.currentLine = new LogLine(this.content[this.currentLocation], this.regExpList, this.replaceTimestamps);
+            this.currentLine = new LogLine(this.content[this.currentLocation], this.regExpList, this.replaceTimestamps, this.timeFormats);
         } else {
             this.currentLine = null;
         }

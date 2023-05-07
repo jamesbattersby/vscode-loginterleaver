@@ -88,12 +88,12 @@ suite('Extension Test Suite', () => {
 				return;
 			}
 
-			let uut: LogLine = new LogLine(test.line, [RegExp(test.expression)], true);
+			let uut: LogLine = new LogLine(test.line, [RegExp(test.expression)], true, undefined);
 			let uutResult: null | Date = uut.getTimestamp();
 
 			if (test.result && uutResult) {
 				assert.equal(isValid(test.result), isValid(uutResult), test.line + " Validity");
-				if (test.result) {
+				if (isValid(test.result)) {
 					assert.equal(true, isEqual(test.result, uutResult), test.line + " Time");
 				}
 				assert.equal(test.newLine, uut.getLine(), test.line + " Text");
