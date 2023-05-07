@@ -5,6 +5,7 @@ import { Uri, WorkspaceConfiguration, window, workspace, CancellationToken } fro
 import path = require('path');
 import { LogFile } from './logfile';
 import { readFile } from 'fs/promises';
+import { isBefore, isEqual } from 'date-fns';
 
 // Implementation
 export class Interleaver {
@@ -80,7 +81,7 @@ export class Interleaver {
             }
             if (this.toInterleave[currentFile]) {
                 if (activeFile !== -1) {
-                    if (this.toInterleave[currentFile].getTimestamp().isBefore(this.toInterleave[activeFile].getTimestamp())) {
+                    if (isBefore(this.toInterleave[currentFile].getTimestamp(), this.toInterleave[activeFile].getTimestamp())) {
                         activeFile = currentFile;
                     }
                 } else {
@@ -92,7 +93,7 @@ export class Interleaver {
         if (activeFile !== -1) {
             // Keep adding lines from the current file until we pass the current time
             let currentTimestamp = this.toInterleave[activeFile].getTimestamp();
-            while (currentTimestamp.isSame(this.toInterleave[activeFile].getTimestamp()) &&
+            while (isEqual(currentTimestamp, this.toInterleave[activeFile].getTimestamp()) &&
                 !this.toInterleave[activeFile].atEnd()) {
                 if (this.cancellationToken?.isCancellationRequested) {
                     return

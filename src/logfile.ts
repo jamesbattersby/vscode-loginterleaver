@@ -3,8 +3,8 @@
 // Imports
 import { WorkspaceConfiguration } from 'vscode';
 import { LogLine } from './logline';
-import moment = require('moment');
-
+import { isValid, parseISO } from 'date-fns'
+    
 // Implementation
 export class LogFile {
     private readonly filename: string;
@@ -18,8 +18,8 @@ export class LogFile {
     private readonly addFilename: string | undefined;
     private currentLocation: number;
     private currentLine: null | LogLine;
-    private initalTimestamp: moment.Moment;
-    private lastTimestamp: moment.Moment;
+    private initalTimestamp: null | Date;
+    private lastTimestamp: Date;
     private paddedFilename: string;
 
 
@@ -29,7 +29,7 @@ export class LogFile {
         this.content = content.split(/\r?\n/);
         this.size = this.content.length;
         this.currentLocation = 0;
-        this.initalTimestamp = moment();
+        this.initalTimestamp = parseISO("");
         this.gotTimestamps = this.setFirstTimestamp();
         this.lastTimestamp = this.initalTimestamp;
         this.dropBlank = (settings.get("dropBlankLines") === true);
@@ -51,7 +51,7 @@ export class LogFile {
         for (let i = 0; i < this.size; i++) {
             let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps);
             let timestamp = logLine.getTimestamp();
-            if (moment.isMoment(timestamp)) {
+            if (isValid(timestamp)) {
                 this.initalTimestamp = timestamp;
                 return true;
             }
@@ -59,18 +59,18 @@ export class LogFile {
         return false;
     }
 
-    public getStartTimestamp(): moment.Moment {
+    public getStartTimestamp(): Date | null {
         return this.initalTimestamp;
     }
 
-    public getTimestamp(): moment.Moment {
+    public getTimestamp(): Date {
         if (this.currentLocation >= this.size || this.currentLine === null) {
             return this.lastTimestamp;
         }
 
         do {
             let timestamp = this.currentLine.getTimestamp();
-            if (moment.isMoment(timestamp)) {
+            if (timestamp && isValid(timestamp)) {
                 this.lastTimestamp = timestamp;
                 return timestamp;
             }
