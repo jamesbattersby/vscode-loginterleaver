@@ -14,6 +14,7 @@
 Combine multiple log files in to a single ordered log.
 
 * Can use multiple regular expressions to extract the timestamps from log files, allowing files with different format times to be merged.
+* Fully customised date formats can be specified using date-fns format specifiers (https://date-fns.org/v2.30.0/docs/parse)
 * Blank lines can be removed, enabling log files to be cleaned up.
 * Lines with invalid or missing timestamps can be either removed, or have the timestamp of the immediatly preceeding line assigned.  If there is a block
 of invalid or missing timestamps, these lines will be kept together in the merged output
@@ -50,6 +51,20 @@ The default regex should be able to extract an ISO formatted timestamp.  So, all
 The timestamps may include a `T` between the date and time.
 
 Note that if no timezone information is supplied, the timezone will be assumed to be the same as the local machine.
+
+### Adding custom date formats
+
+Additional formats can be added in the 'timeFormatSpecifications` settings, for example:
+
+``` json
+{
+    "name": "My time format",
+    "format": "dd/LLL/yyyy:HH:mm:ss xxxx"
+}
+```
+
+Note, that the `name` field is not used, and it simply for your reference.
+You can test out formats interactivley here: https://date-fns-interactive.netlify.app/
 
 ## Usage
 
