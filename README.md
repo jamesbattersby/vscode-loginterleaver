@@ -63,7 +63,7 @@ Additional formats can be added in the `timeFormatSpecifications` settings, for 
 }
 ```
 
-Note, that the `name` field is not used, and it simply for your reference.
+Note that the `name` field is not used.  It simply for your reference.
 You can test out formats interactivley here: https://date-fns-interactive.netlify.app/
 
 ## Usage
