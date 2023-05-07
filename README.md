@@ -14,10 +14,10 @@
 Combine multiple log files in to a single ordered log.
 
 * Can use multiple regular expressions to extract the timestamps from log files, allowing files with different format times to be merged.
-* Fully customised date formats can be specified using date-fns format specifiers (https://date-fns.org/v2.30.0/docs/parse)
+* Fully customised date formats can be specified using date-fns format specifiers, see https://date-fns.org/v2.30.0/docs/parse.
 * Blank lines can be removed, enabling log files to be cleaned up.
 * Lines with invalid or missing timestamps can be either removed, or have the timestamp of the immediatly preceeding line assigned.  If there is a block
-of invalid or missing timestamps, these lines will be kept together in the merged output
+of invalid or missing timestamps, these lines will be kept together in the merged output.
 * Timestamps in the merged output can be re-written in ISO format.
 * Can merge an arbitary number of log files at once.
 * Can include the contents of the current active editor, if it is a log file.
