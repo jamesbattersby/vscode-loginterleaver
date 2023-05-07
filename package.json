@@ -63,11 +63,11 @@
                 },
                 "format": {
                   "type": "string",
-                  "description": "Time format specifier for non-ISO formtted time. See https://date-fns.org/v2.30.0/docs/parse"
+                  "description": "Time format specifier for non-ISO formatted time. See https://date-fns.org/v2.30.0/docs/parse"
                 }
               }
             }
-          },          
+          },
           "loginterleaver.dropBlankLines": {
             "type": "boolean",
             "default": true,

@@ -4,7 +4,7 @@
 import { WorkspaceConfiguration } from 'vscode';
 import { LogLine } from './logline';
 import { isValid, parseISO } from 'date-fns'
-    
+
 // Implementation
 export class LogFile {
     private readonly filename: string;
@@ -120,6 +120,7 @@ export class LogFile {
     }
 
     private nextLine() {
+        let timeFormat: string | null | undefined = this.currentLine?.getFormat()
         if (this.currentLocation < this.size) {
             this.currentLocation++;
         }
@@ -131,7 +132,7 @@ export class LogFile {
             }
         }
         if (this.currentLocation < this.size) {
-            this.currentLine = new LogLine(this.content[this.currentLocation], this.regExpList, this.replaceTimestamps, this.timeFormats);
+            this.currentLine = new LogLine(this.content[this.currentLocation], this.regExpList, this.replaceTimestamps, this.timeFormats, timeFormat);
         } else {
             this.currentLine = null;
         }

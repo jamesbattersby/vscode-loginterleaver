@@ -11,12 +11,12 @@ export class LogLine {
     private required: string;
     private lastFormatUsed: string | null
 
-    public constructor(line: string, regexs: RegExp[], replaceTimestamp: boolean, formats: IFormats[] | undefined) {
+    public constructor(line: string, regexs: RegExp[], replaceTimestamp: boolean, formats: IFormats[] | undefined, lastFormatUsed: string | null = null) {
         this.line = line;
         this.regexs = regexs;
         this.timestamp = null;
         this.required = line;
-        this.lastFormatUsed = null;
+        this.lastFormatUsed = lastFormatUsed;
         for (let index: number = 0; index < this.regexs.length; index++) {
             let regexResult: null | RegExpExecArray = this.regexs[index].exec(this.line);
             if (regexResult && regexResult.length === 2) {
@@ -51,5 +51,9 @@ export class LogLine {
 
     public getLine(): string {
         return this.required;
+    }
+
+    public getFormat(): string | null {
+        return this.lastFormatUsed;
     }
 }
