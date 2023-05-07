@@ -54,7 +54,7 @@ Note that if no timezone information is supplied, the timezone will be assumed t
 
 ### Adding custom date formats
 
-Additional formats can be added in the 'timeFormatSpecifications` settings, for example:
+Additional formats can be added in the `timeFormatSpecifications` settings, for example:
 
 ``` json
 {
