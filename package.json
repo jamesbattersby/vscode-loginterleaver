@@ -3,9 +3,9 @@
   "displayName": "Log Interleaver",
   "description": "Interleave logs - merge logs from different sources in to one time sorted log",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
-    "vscode": "^1.74.0"
+    "vscode": "^1.77.0"
   },
   "publisher": "JamesBattersby",
   "author": {
@@ -50,6 +50,23 @@
             "type": "string",
             "default": "^([\\d]{4}[-\\/][\\d]{2}[-\\/][\\d]{2}[\\sT]{1}[\\d]{2}:[\\d]{2}:[\\d]{2}(?:[\\.,]{1}\\d*)?(?:Z)?(?:(?<!Z)[\\+-]{1}[\\d]{2}:[\\d]{2})?)",
             "description": "Regular expressions to extract timestamp from log line.\nSpace separated."
+          },
+          "loginterleaver.timeFormatSpecifications": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "timeFormatSpecifications",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A name for the time format."
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Time format specifier for non-ISO formatted time. See https://date-fns.org/v2.30.0/docs/parse"
+                }
+              }
+            }
           },
           "loginterleaver.dropBlankLines": {
             "type": "boolean",
@@ -100,7 +117,7 @@
     "test-compile": "tsc -p ./"
   },
   "dependencies": {
-    "moment": "^2.29.4"
+    "date-fns": "^2.30.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

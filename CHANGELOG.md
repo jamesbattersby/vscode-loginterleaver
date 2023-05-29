@@ -2,6 +2,16 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
+## 0.2.0: 29 May 2023
+
+Features:
+
+- Allow non-ISO formatted dates to be parsed (#485)
+
+Updates:
+
+- Remove moment and replace with date-fns
+
 ## 0.1.0: 29 December 2022
 
 Features:

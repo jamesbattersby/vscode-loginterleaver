@@ -3,7 +3,7 @@
 // Imports
 import { WorkspaceConfiguration } from 'vscode';
 import { LogLine } from './logline';
-import moment = require('moment');
+import { isValid, parseISO } from 'date-fns'
 
 // Implementation
 export class LogFile {
@@ -13,23 +13,25 @@ export class LogFile {
     private readonly gotTimestamps: boolean;
     private readonly replaceTimestamps: boolean;
     private readonly regExpList: RegExp[];
+    private readonly timeFormats: IFormats[] | undefined;
     private readonly dropBlank: boolean;
     private readonly dropInvalid: boolean;
     private readonly addFilename: string | undefined;
     private currentLocation: number;
     private currentLine: null | LogLine;
-    private initalTimestamp: moment.Moment;
-    private lastTimestamp: moment.Moment;
+    private initalTimestamp: null | Date;
+    private lastTimestamp: Date;
     private paddedFilename: string;
 
 
     public constructor(content: string, filename: string, settings: WorkspaceConfiguration) {
         this.regExpList = this.prepareRegularExpressions(settings.get("timestampRegex"));
+        this.timeFormats = settings.get("timeFormatSpecifications");
         this.filename = filename;
         this.content = content.split(/\r?\n/);
         this.size = this.content.length;
         this.currentLocation = 0;
-        this.initalTimestamp = moment();
+        this.initalTimestamp = parseISO("");
         this.gotTimestamps = this.setFirstTimestamp();
         this.lastTimestamp = this.initalTimestamp;
         this.dropBlank = (settings.get("dropBlankLines") === true);
@@ -37,7 +39,7 @@ export class LogFile {
         this.replaceTimestamps = (settings.get("replaceTimestamps") === true);
         this.addFilename = settings.get("addFileName");
         this.paddedFilename = filename;
-        this.currentLine = new LogLine(this.content[0], this.regExpList, this.replaceTimestamps);
+        this.currentLine = new LogLine(this.content[0], this.regExpList, this.replaceTimestamps, this.timeFormats);
     }
 
     public setMaxFilenameLength(filenamePadding: number) {
@@ -49,9 +51,9 @@ export class LogFile {
     }
     public setFirstTimestamp(): boolean {
         for (let i = 0; i < this.size; i++) {
-            let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps);
+            let logLine = new LogLine(this.content[i], this.regExpList, this.replaceTimestamps, this.timeFormats);
             let timestamp = logLine.getTimestamp();
-            if (moment.isMoment(timestamp)) {
+            if (isValid(timestamp)) {
                 this.initalTimestamp = timestamp;
                 return true;
             }
@@ -59,18 +61,18 @@ export class LogFile {
         return false;
     }
 
-    public getStartTimestamp(): moment.Moment {
+    public getStartTimestamp(): Date | null {
         return this.initalTimestamp;
     }
 
-    public getTimestamp(): moment.Moment {
+    public getTimestamp(): Date {
         if (this.currentLocation >= this.size || this.currentLine === null) {
             return this.lastTimestamp;
         }
 
         do {
             let timestamp = this.currentLine.getTimestamp();
-            if (moment.isMoment(timestamp)) {
+            if (timestamp && isValid(timestamp)) {
                 this.lastTimestamp = timestamp;
                 return timestamp;
             }
@@ -118,6 +120,7 @@ export class LogFile {
     }
 
     private nextLine() {
+        let timeFormat: string | null | undefined = this.currentLine?.getFormat()
         if (this.currentLocation < this.size) {
             this.currentLocation++;
         }
@@ -129,7 +132,7 @@ export class LogFile {
             }
         }
         if (this.currentLocation < this.size) {
-            this.currentLine = new LogLine(this.content[this.currentLocation], this.regExpList, this.replaceTimestamps);
+            this.currentLine = new LogLine(this.content[this.currentLocation], this.regExpList, this.replaceTimestamps, this.timeFormats, timeFormat);
         } else {
             this.currentLine = null;
         }
