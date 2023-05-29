@@ -2,7 +2,7 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
-## WIP
+## 0.2.0: 29 May 2023
 
 Features:
 
@@ -10,7 +10,7 @@ Features:
 
 Updates:
 
-- Remove mement and replace with date-fns
+- Remove moment and replace with date-fns
 
 ## 0.1.0: 29 December 2022
 
