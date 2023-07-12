@@ -3,8 +3,7 @@ version: 2.1
 jobs:
   build-test:
     machine:
-      image: linux-cuda:edge
-    resource_class: large
+      image: linux-cuda-11:default
     steps:
       - checkout
       - run:
