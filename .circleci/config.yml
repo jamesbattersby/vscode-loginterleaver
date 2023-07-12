@@ -4,6 +4,7 @@ jobs:
   build-test:
     machine:
       image: linux-cuda:edge
+    resource_class: large
     steps:
       - checkout
       - run:
