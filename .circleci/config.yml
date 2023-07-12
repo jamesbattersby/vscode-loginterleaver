@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-test:
     machine:
-      image: linux-cuda-11:default
+      image: ubuntu-2004:2023.04.2
     steps:
       - checkout
       - run:
