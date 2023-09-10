@@ -124,7 +124,7 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.6.0",
     "@types/vscode": "^1.81.0",
-    "glob": "^8.1.0",
+    "glob": "^10.3.4",
     "mocha": "^10.2.0",
     "ts-loader": "^9.4.4",
     "tslint": "^6.1.3",
