@@ -123,7 +123,7 @@
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.4",
     "@types/node": "^20.9.2",
-    "@types/vscode": "^1.84.1",
+    "@types/vscode": "^1.84.2",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
     "ts-loader": "^9.5.1",
