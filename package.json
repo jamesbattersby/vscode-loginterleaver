@@ -3,7 +3,7 @@
   "displayName": "Log Interleaver",
   "description": "Interleave logs - merge logs from different sources in to one time sorted log",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.3.0-beta1",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -67,6 +67,11 @@
                 }
               }
             }
+          },
+          "loginterleaver.dropDuplicateLines": {
+            "type": "boolean",
+            "default": false,
+            "description": "Discard duplicate lines."
           },
           "loginterleaver.dropBlankLines": {
             "type": "boolean",
