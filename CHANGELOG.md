@@ -2,6 +2,12 @@
 
 All notable changes to the "Log Interleaver" extension will be documented in this file.
 
+## Unreleased
+
+Features:
+
+- Allow duplicate lines to be dropped (#572)
+
 ## 0.2.0: 29 May 2023
 
 Features:

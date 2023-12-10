@@ -13,6 +13,8 @@ export class Interleaver {
     private readonly settings: WorkspaceConfiguration;
     private readonly percentIncrement: number = 5;
     private readonly lineUpdate: number = 500;
+    private readonly dropDuplicateLines: boolean;
+
     private cancellationToken: CancellationToken | null = null;
     private toInterleave: LogFile[] = [];
     private completed: number = 0;
@@ -30,6 +32,7 @@ export class Interleaver {
         this.progress = 0;
         this.lastPercentage = 0;
         this.progressUpdateInterval = this.lineUpdate
+        this.dropDuplicateLines = (settings.get("dropDuplicateLines") === true);
     }
 
     public async doInterleaving(progressIndicator: any, cancelToken: CancellationToken) {
@@ -75,6 +78,7 @@ export class Interleaver {
     private async processLine() {
         // Find the file with the earliest timestamp
         let activeFile: number = -1;
+        let lastLine: string | null = null;
         for (let currentFile = 0; currentFile < this.toInterleave.length; currentFile++) {
             if (this.cancellationToken?.isCancellationRequested) {
                 return
@@ -101,7 +105,10 @@ export class Interleaver {
                 let myLine = this.toInterleave[activeFile].getLine();
                 await this.doneLine();
                 if (myLine) {
-                    this.merged.push(myLine);
+                    if (myLine !== lastLine || !this.dropDuplicateLines) {
+                        this.merged.push(myLine);
+                    }
+                    lastLine = myLine;
                 }
             }
 
