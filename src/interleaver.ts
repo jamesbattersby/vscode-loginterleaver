@@ -24,6 +24,8 @@ export class Interleaver {
     private progressIndicator: any | null = null;
     private lastPercentage: number = 0;
     private progressUpdateInterval: number = 0
+    private lastLine: string | null = null;
+    private duplicationInfo: IDupInfo = { count: 0, initial: "", files: [] };
 
     public constructor(settings: WorkspaceConfiguration, fileList: Uri[]) {
         this.fileList = fileList;
@@ -32,6 +34,9 @@ export class Interleaver {
         this.progress = 0;
         this.lastPercentage = 0;
         this.progressUpdateInterval = this.lineUpdate
+        this.lastLine = null;
+        this.duplicationInfo = { count: 0, initial: "", files: [] };
+
         this.dropDuplicateLines = (settings.get("dropDuplicateLines") === true);
     }
 
@@ -78,7 +83,6 @@ export class Interleaver {
     private async processLine() {
         // Find the file with the earliest timestamp
         let activeFile: number = -1;
-        let lastLine: string | null = null;
         for (let currentFile = 0; currentFile < this.toInterleave.length; currentFile++) {
             if (this.cancellationToken?.isCancellationRequested) {
                 return
@@ -102,13 +106,23 @@ export class Interleaver {
                 if (this.cancellationToken?.isCancellationRequested) {
                     return
                 }
-                let myLine = this.toInterleave[activeFile].getLine();
+                let [prefix, time, content, postfix] = this.toInterleave[activeFile].getLine();
                 await this.doneLine();
-                if (myLine) {
-                    if (myLine !== lastLine || !this.dropDuplicateLines) {
-                        this.merged.push(myLine);
+                if (content) {
+                    if (content.trim() !== this.lastLine || !this.dropDuplicateLines) {
+                        if (this.duplicationInfo.count != 0) {
+                            this.merged.push(`Above line duplicated ${this.duplicationInfo.count} time${this.duplicationInfo.count === 1 ? "" : "s"} between ${this.duplicationInfo.initial} and ${time}`);
+                        }
+                        this.duplicationInfo = { count: 0, initial: "", files: [] }
+                        this.merged.push(`${prefix}${time}${content}${postfix}`);
+                    } else {
+                        this.duplicationInfo.count++
+                        if (this.duplicationInfo.count === 1) {
+                            this.duplicationInfo.initial = time;
+                        }
+                        // duplicationInfo.files.includes("")
                     }
-                    lastLine = myLine;
+                    this.lastLine = content.trim();
                 }
             }
 

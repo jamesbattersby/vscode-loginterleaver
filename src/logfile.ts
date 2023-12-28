@@ -88,27 +88,25 @@ export class LogFile {
         return this.lastTimestamp;
     }
 
-    public getLine(): null | string {
+    public getLine(): [string, string, string | null, string] {
         if (this.currentLine === null) {
-            return "";
+            return ["", "", "", ""];
         }
 
-        let line: string = "";
-        let content = this.currentLine.getLine();
+        let [content, timestamp] = this.currentLine.getLineParts();
+        let postfix: string = "";
+        let prefix: string = "";
         if (this.currentLocation >= this.size) {
-            return null;
+            return ["", "", null, ""];
         }
         else if (this.addFilename === "start") {
-            line = this.paddedFilename + content;
+            prefix = this.paddedFilename;
         }
         else if (this.addFilename === "end") {
-            line = content + '    <-- ' + this.filename;
-        }
-        else {
-            line = content;
+            postfix = '    <-- ' + this.filename;
         }
         this.nextLine();
-        return line;
+        return [prefix, timestamp, content, postfix];
     }
 
     public atEnd(): Boolean {

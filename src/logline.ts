@@ -9,13 +9,17 @@ export class LogLine {
     private readonly regexs: RegExp[];
     private timestamp: null | Date;
     private required: string;
-    private lastFormatUsed: string | null
+    private lastFormatUsed: string | null;
+    private withoutTimestamp: string;
+    private timestampOnly: string;
 
     public constructor(line: string, regexs: RegExp[], replaceTimestamp: boolean, formats: IFormats[] | undefined, lastFormatUsed: string | null = null) {
         this.line = line;
         this.regexs = regexs;
         this.timestamp = null;
         this.required = line;
+        this.withoutTimestamp = "";
+        this.timestampOnly = "";
         this.lastFormatUsed = lastFormatUsed;
         for (let index: number = 0; index < this.regexs.length; index++) {
             let regexResult: null | RegExpExecArray = this.regexs[index].exec(this.line);
@@ -37,8 +41,13 @@ export class LogLine {
                         }
                     }
                 }
+
+                this.withoutTimestamp = this.line.replace(inputTime, "");
+                this.timestampOnly = inputTime;
+
                 if (isValid(this.timestamp) && this.timestamp && replaceTimestamp) {
                     this.required = this.line.replace(inputTime, this.timestamp.toISOString());
+                    this.timestampOnly = this.timestamp.toISOString()
                 }
                 break;
             }
@@ -51,6 +60,10 @@ export class LogLine {
 
     public getLine(): string {
         return this.required;
+    }
+
+    public getLineParts(): [string, string] {
+        return [this.withoutTimestamp, this.timestampOnly];
     }
 
     public getFormat(): string | null {
