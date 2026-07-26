@@ -88,16 +88,16 @@ export class LogFile {
         return this.lastTimestamp;
     }
 
-    public getLine(): [string, string, string | null, string] {
+    public getLine(): ILineParts {
         if (this.currentLine === null) {
-            return ["", "", "", ""];
+            return this.emptyLine("");
         }
 
-        let [content, timestamp] = this.currentLine.getLineParts();
+        let [content, timestampText] = this.currentLine.getLineParts();
         let postfix: string = "";
         let prefix: string = "";
         if (this.currentLocation >= this.size) {
-            return ["", "", null, ""];
+            return this.emptyLine(null);
         }
         else if (this.addFilename === "start") {
             prefix = this.paddedFilename;
@@ -105,8 +105,27 @@ export class LogFile {
         else if (this.addFilename === "end") {
             postfix = '    <-- ' + this.filename;
         }
+        // Read the timestamp before advancing the cursor.  Lines with no
+        // parseable timestamp of their own inherit the last good one, which is
+        // the same rule getTimestamp() sorts them by.
+        let lineTime: Date | null = this.currentLine.getTimestamp();
+        if (lineTime && isValid(lineTime)) {
+            this.lastTimestamp = lineTime;
+        }
+        let timestamp: Date = this.lastTimestamp;
         this.nextLine();
-        return [prefix, timestamp, content, postfix];
+        return { prefix, timestampText, content, postfix, timestamp, filename: this.filename };
+    }
+
+    private emptyLine(content: string | null): ILineParts {
+        return {
+            prefix: "",
+            timestampText: "",
+            content,
+            postfix: "",
+            timestamp: this.lastTimestamp,
+            filename: this.filename
+        };
     }
 
     public atEnd(): Boolean {

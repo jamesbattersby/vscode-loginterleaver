@@ -4,6 +4,16 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			// The extension loads from dist/, so this is what F5 has to build.
+			// The watch task below only produces out/, which is used by the tests.
+			"type": "npm",
+			"script": "webpack",
+			"problemMatcher": "$tsc",
+			"presentation": {
+				"reveal": "silent"
+			}
+		},
+		{
 			"type": "npm",
 			"script": "watch",
 			"problemMatcher": "$tsc-watch",

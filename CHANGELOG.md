@@ -6,7 +6,17 @@ All notable changes to the "Log Interleaver" extension will be documented in thi
 
 Features:
 
-- Allow duplicate lines to be dropped (#572)
+- Allow repeated lines to be folded or dropped (#572).  The new `duplicateLines` setting replaces `dropDuplicateLines`, and
+  adds a `fold` mode that keeps the repeats but collapses them into a folded region annotated with how many times the line
+  repeated and over what period.  This is the new default; set `duplicateLines` to `keep` for the previous behaviour.
+
+- New `Log Interleaver: Interleave Open Files` command, which merges the already open editors instead of asking for files.  This avoids the open dialog,
+  which cannot select multiple files on all platforms.
+
+Bug Fixes:
+
+- A run of repeated lines at the very end of the merged output is no longer left unreported.
+- Files are read from the editor when they are already open, so unsaved changes are picked up and untitled documents can be merged.
 
 ## 0.2.0: 29 May 2023
 

@@ -1,9 +1,11 @@
 'use strict';
 
 // Imports
-import { Uri, WorkspaceConfiguration, window, workspace, CancellationToken } from 'vscode';
+import { Uri, WorkspaceConfiguration, window, workspace, commands, CancellationToken, FoldingRange, FoldingRangeKind } from 'vscode';
 import path = require('path');
 import { LogFile } from './logfile';
+import { DuplicateFoldingProvider } from './foldingProvider';
+import { describeRun, summariseRun } from './duplicates';
 import { readFile } from 'fs/promises';
 import { isBefore, isEqual } from 'date-fns';
 
@@ -13,31 +15,38 @@ export class Interleaver {
     private readonly settings: WorkspaceConfiguration;
     private readonly percentIncrement: number = 5;
     private readonly lineUpdate: number = 500;
-    private readonly dropDuplicateLines: boolean;
+    private readonly duplicateLines: string;
+    private readonly duplicateFoldThreshold: number;
+    private readonly foldOnOpen: boolean;
+    private readonly namingFiles: boolean;
+    private readonly foldingProvider: DuplicateFoldingProvider | null;
 
     private cancellationToken: CancellationToken | null = null;
     private toInterleave: LogFile[] = [];
     private completed: number = 0;
     private merged: string[] = []
+    private foldRanges: FoldingRange[] = [];
     private totalSize: number = 0;
     private progress: number = 0;
     private progressIndicator: any | null = null;
     private lastPercentage: number = 0;
     private progressUpdateInterval: number = 0
-    private lastLine: string | null = null;
-    private duplicationInfo: IDupInfo = { count: 0, initial: "", files: [] };
+    private currentRun: IDupInfo | null = null;
 
-    public constructor(settings: WorkspaceConfiguration, fileList: Uri[]) {
+    public constructor(settings: WorkspaceConfiguration, fileList: Uri[], foldingProvider: DuplicateFoldingProvider | null = null) {
         this.fileList = fileList;
         this.settings = settings;
+        this.foldingProvider = foldingProvider;
         this.totalSize = 0;
         this.progress = 0;
         this.lastPercentage = 0;
         this.progressUpdateInterval = this.lineUpdate
-        this.lastLine = null;
-        this.duplicationInfo = { count: 0, initial: "", files: [] };
+        this.currentRun = null;
 
-        this.dropDuplicateLines = (settings.get("dropDuplicateLines") === true);
+        this.duplicateLines = settings.get("duplicateLines") ?? "keep";
+        this.duplicateFoldThreshold = Math.max(2, settings.get("duplicateFoldThreshold") ?? 2);
+        this.foldOnOpen = (settings.get("foldDuplicatesOnOpen") !== false);
+        this.namingFiles = (settings.get("addFileName") !== "off");
     }
 
     public async doInterleaving(progressIndicator: any, cancelToken: CancellationToken) {
@@ -51,8 +60,8 @@ export class Interleaver {
             }
             let selectedLogFilename = path.parse(this.fileList[i].fsPath);
             await this.updateProgress(`Loading files... : ${selectedLogFilename.base}`)
-            let in_file = await readFile(this.fileList[i].fsPath)
-            let selectedLogFile = new LogFile(in_file.toString(),
+            let in_file = await this.readContent(this.fileList[i])
+            let selectedLogFile = new LogFile(in_file,
                 selectedLogFilename.base, this.settings);
 
             console.log('Inserting file:' + this.fileList[i].path.toString());
@@ -69,6 +78,19 @@ export class Interleaver {
         return await this.interleave()
     }
 
+    /**
+     * Read a file, preferring the copy VS Code already has open.  That picks up
+     * unsaved changes, and is the only way to get at an untitled document -
+     * neither of which have anything useful on disk.
+     */
+    private async readContent(file: Uri): Promise<string> {
+        let open = workspace.textDocuments.find(document => document.uri.toString() === file.toString());
+        if (open) {
+            return open.getText();
+        }
+        return (await readFile(file.fsPath)).toString();
+    }
+
     async interleave() {
         while (this.toInterleave.length > this.completed) {
             if (this.cancellationToken?.isCancellationRequested) {
@@ -76,6 +98,8 @@ export class Interleaver {
             }
             await this.processLine()
         }
+        // The last lines of the merge can be a run of their own.
+        this.flushRun()
         await this.updateProgress("Interleaving files... (100%)", this.percentIncrement)
         await this.openInUntitled(this.merged.join('\n'), "log")
     }
@@ -106,23 +130,10 @@ export class Interleaver {
                 if (this.cancellationToken?.isCancellationRequested) {
                     return
                 }
-                let [prefix, time, content, postfix] = this.toInterleave[activeFile].getLine();
+                let line: ILineParts = this.toInterleave[activeFile].getLine();
                 await this.doneLine();
-                if (content) {
-                    if (content.trim() !== this.lastLine || !this.dropDuplicateLines) {
-                        if (this.duplicationInfo.count != 0) {
-                            this.merged.push(`Above line duplicated ${this.duplicationInfo.count} time${this.duplicationInfo.count === 1 ? "" : "s"} between ${this.duplicationInfo.initial} and ${time}`);
-                        }
-                        this.duplicationInfo = { count: 0, initial: "", files: [] }
-                        this.merged.push(`${prefix}${time}${content}${postfix}`);
-                    } else {
-                        this.duplicationInfo.count++
-                        if (this.duplicationInfo.count === 1) {
-                            this.duplicationInfo.initial = time;
-                        }
-                        // duplicationInfo.files.includes("")
-                    }
-                    this.lastLine = content.trim();
+                if (line.content) {
+                    this.emitLine(line);
                 }
             }
 
@@ -136,6 +147,72 @@ export class Interleaver {
             console.log("Unable to find the next timestamp - aborting");
             this.completed = this.toInterleave.length;
             this.toInterleave = [];
+        }
+    }
+
+    /**
+     * Add a line to the merged output, tracking runs of repeats as we go.
+     *
+     * Lines are compared on their content alone - the timestamp and any
+     * filename decoration are excluded - so the same message logged at
+     * different times, or by different files, still counts as a repeat.
+     */
+    private emitLine(line: ILineParts) {
+        let key: string = (line.content ?? "").trim();
+
+        if (this.currentRun && this.currentRun.key === key) {
+            this.currentRun.count++;
+            this.currentRun.last = line.timestamp;
+            this.currentRun.lastText = line.timestampText;
+            if (!this.currentRun.files.includes(line.filename)) {
+                this.currentRun.files.push(line.filename);
+            }
+            // In drop mode the repeats are replaced by a summary when the run
+            // ends, so there is nothing to write out here.
+            if (this.duplicateLines === "drop") {
+                return;
+            }
+        } else {
+            this.flushRun();
+            this.currentRun = {
+                headerIndex: this.merged.length,
+                key,
+                count: 1,
+                first: line.timestamp,
+                last: line.timestamp,
+                firstText: line.timestampText,
+                lastText: line.timestampText,
+                files: [line.filename]
+            };
+        }
+
+        this.merged.push(`${line.prefix}${line.timestampText}${line.content}${line.postfix}`);
+    }
+
+    /**
+     * Close off the run in progress, annotating or summarising it if it was
+     * long enough to be worth reporting.
+     */
+    private flushRun() {
+        let run: IDupInfo | null = this.currentRun;
+        this.currentRun = null;
+
+        if (!run || run.count < 2) {
+            return;
+        }
+
+        if (this.duplicateLines === "drop") {
+            // The threshold does not apply here: emitLine has already discarded
+            // the repeats, so they must always be accounted for.
+            this.merged.push(summariseRun(run.count, run.firstText, run.lastText));
+        } else if (this.duplicateLines === "fold" && run.count >= this.duplicateFoldThreshold) {
+            // Only the first line of a folded region stays visible, so the
+            // summary has to go on it.  The run occupies a contiguous block of
+            // the merged output because nothing else is written while it runs.
+            this.merged[run.headerIndex] += describeRun(run.count, run.first, run.last,
+                this.namingFiles ? run.files : []);
+            this.foldRanges.push(new FoldingRange(run.headerIndex, run.headerIndex + run.count - 1,
+                FoldingRangeKind.Region));
         }
     }
 
@@ -162,6 +239,14 @@ export class Interleaver {
         }
     }
 
+    public getMerged(): string[] {
+        return this.merged;
+    }
+
+    public getFoldRanges(): FoldingRange[] {
+        return this.foldRanges;
+    }
+
     public add(newFile: Uri) {
         this.fileList.push(newFile);
         console.log('Adding new file:' + newFile.path.toString());
@@ -172,6 +257,20 @@ export class Interleaver {
             language,
             content,
         });
-        window.showTextDocument(document);
+
+        // Register before showing: the document may already have been asked for
+        // its folding ranges, and registering fires the change event that
+        // discards that empty answer.
+        if (this.foldingProvider && this.foldRanges.length > 0) {
+            this.foldingProvider.register(document.uri, this.foldRanges);
+        }
+
+        await window.showTextDocument(document);
+
+        if (this.foldOnOpen && this.foldRanges.length > 0) {
+            // Give the editor a turn to ask for the ranges before folding them.
+            await new Promise<void>(r => setTimeout(r, 0));
+            await commands.executeCommand('editor.foldAllMarkerRegions');
+        }
     }
 }

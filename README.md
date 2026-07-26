@@ -16,6 +16,7 @@ Combine multiple log files in to a single ordered log.
 * Can use multiple regular expressions to extract the timestamps from log files, allowing files with different format times to be merged.
 * Fully customised date formats can be specified using date-fns format specifiers, see https://date-fns.org/v2.30.0/docs/parse.
 * Blank lines can be removed, enabling log files to be cleaned up.
+* Repeated lines can be collapsed into a folded region, or dropped entirely.
 * Lines with invalid or missing timestamps can be either removed, or have the timestamp of the immediatly preceeding line assigned.  If there is a block
 of invalid or missing timestamps, these lines will be kept together in the merged output.
 * Timestamps in the merged output can be re-written in ISO format.
@@ -27,14 +28,41 @@ of invalid or missing timestamps, these lines will be kept together in the merge
 
 | Setting                  | Description                                                                                                                                                                                                                               | Default                                                                                                                   |
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| dropDuplicateLines       | Drop lines that are a duplicate of the preceeding line, including the timestamp                                                                                                                                                           | `false`                                                                                                                   |
+| duplicateLines           | How to handle repeated lines.  Options `keep`, `drop`, `fold`.  See [Repeated lines](#repeated-lines).                                                                                                                                    | `fold`                                                                                                                    |
+| duplicateFoldThreshold   | The smallest number of repeats to collapse into a folded region.  Only applies when `duplicateLines` is `fold`.                                                                                                                           | `2`                                                                                                                       |
+| foldDuplicatesOnOpen     | Collapse the folded regions when the merged log is opened.                                                                                                                                                                                | `true`                                                                                                                    |
 | dropBlankLines           | Drop lines that only contain whitespace.                                                                                                                                                                                                  | `true`                                                                                                                    |
-| dropInvalidTimestamp     | Drop lines where the timestamp cannot be extracted.                                                                                                                                                                                       | `true`                                                                                                                    |
+| dropInvalidTimestamp     | Drop lines where the timestamp cannot be extracted.                                                                                                                                                                                       | `false`                                                                                                                   |
 | addFileName              | Add the original filename to the merged log.  Options `off`, `start`, `end`.                                                                                                                                                              | `off`                                                                                                                     |
 | timestampRegex           | The regular expression used to extract the timestamp from the log file. Multiple expressions can be added as a space separated list.                                                                                                      | `^([\d]{4}[-/][\d]{2}[-/][\d]{2}[\sT]{1}[\d]{2}:[\d]{2}:[\d]{2}(?:[\.,]{1}\d*)?(?:Z)?(?:(?<!Z)[\+-]{1}[\d]{2}:[\d]{2})?)` |
 | includeActiveEditor      | Include the contents of the active editor, if it is a log file.                                                                                                                                                                           | `true`                                                                                                                    |
 | replaceTimestamps        | Replace timestamps with ISO formatted timestamps in the merged output.                                                                                                                                                                    | `false`                                                                                                                   |
 | timeFormatSpecifications | An array of time format specification to be tried if the format is not an ISO standard. Consists of a "name" and "format".  The "name" is for reference only.  The "format" is as described here: https://date-fns.org/v2.30.0/docs/parse |                                                                                                                           |
+
+### Repeated lines
+
+Consecutive lines are considered repeats of each other when their content matches, ignoring the timestamp and any filename
+decoration.  The same message logged at different times, or by different files, therefore still counts as a repeat.
+
+`duplicateLines` controls what happens to them:
+
+- `keep` - every line is written out unchanged.
+- `drop` - the repeats are discarded and replaced by a single `Above line repeated 5 times between ... and ...` summary.
+- `fold` - every line is kept, but the repeats are collapsed into a folded region.
+
+In `fold` mode the summary is appended to the first line of the run, because that is the only line the editor leaves visible
+once the region is collapsed:
+
+``` text
+2023-04-19 01:10:14 Connection retry  ⟨repeated 5 times over 2 minutes 13 seconds⟩
+2023-04-19 01:10:45 Connection retry
+2023-04-19 01:11:16 Connection retry
+2023-04-19 01:11:54 Connection retry
+2023-04-19 01:12:27 Connection retry
+```
+
+If every line in the run shares the same timestamp the summary is just `⟨repeated 5 times⟩`.  When `addFileName` is on and the
+run spans more than one file, the file names are listed too.
 
 ### Notes on regular expressions
 
@@ -69,8 +97,21 @@ You can test out formats interactivley here: https://date-fns-interactive.netlif
 
 ## Usage
 
-Select `Log Interleaver` from the command pallet, then select the files to interleave.  A new editor will be opened with the interleaved logs.  If the
-currently active editor contains a log file, this will be included in the interleaved log.  This can be disabled in the settings.
+There are two ways to choose the files to merge.  Either way a new editor is opened with the interleaved logs.
+
+### Log Interleaver
+
+Select `Log Interleaver` from the command pallet, then select the files to interleave.  If the currently active editor contains a log file, this will be
+included in the interleaved log.  This can be disabled in the settings.
+
+### Log Interleaver: Interleave Open Files
+
+Select `Log Interleaver: Interleave Open Files` from the command pallet to merge the files you already have open, without going near the file dialog.
+Every open editor is listed and pre-selected, so pressing `Enter` merges the lot; deselect anything you do not want first.
+
+This is the option to reach for if your platform's open dialog will not let you select more than one file.
+
+Files are read from the editor rather than from disk, so unsaved changes are included, and untitled documents can be merged too.
 
 ## Known Issues
 

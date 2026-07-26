@@ -38,6 +38,11 @@
       {
         "command": "extension.loginterleaver",
         "title": "Log Interleaver"
+      },
+      {
+        "command": "extension.loginterleaveopenfiles",
+        "title": "Interleave Open Files",
+        "category": "Log Interleaver"
       }
     ],
     "configuration": [
@@ -66,10 +71,31 @@
               }
             }
           },
-          "loginterleaver.dropDuplicateLines": {
+          "loginterleaver.duplicateLines": {
+            "type": "string",
+            "default": "fold",
+            "enum": [
+              "keep",
+              "drop",
+              "fold"
+            ],
+            "enumDescriptions": [
+              "Emit every line as-is.",
+              "Discard repeated lines, leaving a summary in their place.",
+              "Keep repeated lines, but collapse them into a folded region."
+            ],
+            "description": "How to handle consecutive lines with identical content (ignoring the timestamp)."
+          },
+          "loginterleaver.duplicateFoldThreshold": {
+            "type": "number",
+            "default": 2,
+            "minimum": 2,
+            "description": "The smallest number of repeats to collapse into a folded region.  Shorter runs are left untouched.  Only applies when duplicateLines is \"fold\"."
+          },
+          "loginterleaver.foldDuplicatesOnOpen": {
             "type": "boolean",
-            "default": false,
-            "description": "Discard duplicate lines."
+            "default": true,
+            "description": "Collapse the folded duplicate regions when the merged log is opened."
           },
           "loginterleaver.dropBlankLines": {
             "type": "boolean",
