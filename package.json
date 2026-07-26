@@ -31,9 +31,7 @@
     "log merge",
     "log interleave"
   ],
-  "activationEvents": [
-    "onCommand:extension.loginterleaver"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension",
   "contributes": {
     "commands": [
